@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>数理自学课件</title>
+<meta name="description" content="数学分析与物理的交互式自学课件。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@700&family=Noto+Sans+SC:wght@400;500&family=JetBrains+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f4f5f8;--surface:#fff;--ink:#171d29;--muted:#566074;--rule:#dce0e8;--accent:#36409a;--eps:#c9601a;
+  --f-display:"Noto Serif SC","Songti SC",serif;--f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;--f-mono:"JetBrains Mono",ui-monospace,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#10131a;--surface:#171b24;--ink:#e3e7ee;--muted:#98a1b2;--rule:#272d39;--accent:#9ba4ff;--eps:#f0914a;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);line-height:1.8}
+.wrap{max-width:760px;margin:0 auto;padding-block:64px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--f-mono);font-size:13px;color:var(--muted);letter-spacing:.06em;margin:0 0 12px}
+h1{font-family:var(--f-display);font-size:clamp(32px,6vw,48px);line-height:1.2;margin:0 0 16px}
+.lede{color:var(--muted);margin:0 0 40px}
+h2{font-size:15px;font-weight:500;color:var(--muted);margin:36px 0 10px;letter-spacing:.04em}
+ul{list-style:none;padding:0;margin:0;border-top:1px solid var(--rule)}
+li{border-bottom:1px solid var(--rule)}
+li a,li span.soon{display:grid;grid-template-columns:4.5em 1fr auto;gap:10px;padding:14px 0;text-decoration:none;color:var(--ink);align-items:baseline}
+li a:hover .t{color:var(--accent)}
+.n,.m{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.t{font-size:17px}
+.t i{font-style:normal;color:var(--eps)}
+.soon .t{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">交互式自学课件</p>
+  <h1>数理自学课件</h1>
+  <p class="lede">每一章都先用可拖动的图建立直觉，再给出严格定义、分步证明和自测题。</p>
+  <h2>数学分析</h2>
+  <ul>
+    <li><a href="/analysis/01-limits/"><span class="n">第一章</span><span class="t">极限：<i>ε</i>-N 与 <i>ε</i>-δ</span><span class="m">约 95 分钟</span></a></li>
+    <li><span class="soon"><span class="n">第二章</span><span class="t">极限的性质</span><span class="m">编写中</span></span></li>
+  </ul>
+</div>
+</body>
+</html>
