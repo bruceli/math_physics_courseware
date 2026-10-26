@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>收敛准则：单调有界与柯西</title>
+<meta name="description" content="数学分析第三章自学课件：单调有界定理、重要极限 e、柯西收敛准则、致密性定理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+html,body{margin:0}[hidden]{display:none!important}
+
+/* Layout: a single reading column (42em) inside a 1040px frame; interactive labs break out to the full frame width. ε is always orange, δ always blue, green = satisfies, red = violates. */
+:root{
+  --bg:#f4f5f8; --surface:#ffffff; --sunk:#eef0f4; --ink:#171d29; --muted:#566074; --rule:#dce0e8; --rule-strong:#c3c9d4; --grid:#e9ecf1;
+  --accent:#36409a; --on-accent:#ffffff;
+  --eps:#c9601a; --eps-soft:rgba(201,96,26,.13);
+  --delta:#2470ad; --delta-soft:rgba(36,112,173,.13);
+  --ok:#22804e; --bad:#c23a33; --s2:#a3317a;
+  --f-display:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10131a; --surface:#171b24; --sunk:#131720; --ink:#e3e7ee; --muted:#98a1b2; --rule:#272d39; --rule-strong:#384050; --grid:#1d222c;
+  --accent:#9ba4ff; --on-accent:#10131a;
+  --eps:#f0914a; --eps-soft:rgba(240,145,74,.17);
+  --delta:#5ba7e4; --delta-soft:rgba(91,167,228,.17);
+  --ok:#4cc083; --bad:#ef6a60; --s2:#e07ab9; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10131a; --surface:#171b24; --sunk:#131720; --ink:#e3e7ee; --muted:#98a1b2; --rule:#272d39; --rule-strong:#384050; --grid:#1d222c;
+  --accent:#9ba4ff; --on-accent:#10131a;
+  --eps:#f0914a; --eps-soft:rgba(240,145,74,.17);
+  --delta:#5ba7e4; --delta-soft:rgba(91,167,228,.17);
+  --ok:#4cc083; --bad:#ef6a60; --s2:#e07ab9; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.85}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.gutter{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.topbar .gutter{display:flex;align-items:center;gap:16px;padding-block:10px}
+.topbar .name{font-family:var(--f-display);font-weight:700;font-size:16px;white-space:nowrap}
+.topbar nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.topbar nav a{font-family:var(--f-mono);font-size:13px;color:var(--muted);text-decoration:none;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.topbar nav a:hover{color:var(--ink);background:var(--sunk)}
+.topbar nav a.done{color:var(--ok)}
+.prog{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.prog .bar{width:72px;height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+@media (max-width:640px){.topbar nav{display:none}.topbar .gutter{justify-content:space-between}}
+.prose{max-width:42em}
+.prose p{margin:0 0 1em}
+a{color:var(--accent)}
+.hero{padding-block:56px 40px}
+.eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.06em;color:var(--muted);margin:0 0 14px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,6.4vw,58px);line-height:1.15;margin:0 0 20px;text-wrap:balance}
+h1 .e{color:var(--eps)} h1 .d{color:var(--delta)}
+.lede{font-size:18px;color:var(--ink);max-width:36em}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin:28px 0 8px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:22px;height:12px;border-radius:3px;display:inline-block}
+.toc{list-style:none;padding:0;margin:32px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 32px;border-top:1px solid var(--rule)}
+.toc li{border-bottom:1px solid var(--rule)}
+.toc a{display:grid;grid-template-columns:3.2em 1fr auto;gap:8px;padding:10px 0;text-decoration:none;color:var(--ink);align-items:baseline}
+.toc a:hover .t{color:var(--accent)}
+.toc .n,.toc .m{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.toc li.done .n{color:var(--ok)}
+section.lesson{padding-block:56px 36px;border-top:1px solid var(--rule)}
+.secno{font-family:var(--f-mono);font-size:13px;color:var(--muted);letter-spacing:.06em}
+h2{font-family:var(--f-display);font-weight:700;font-size:clamp(25px,3.4vw,31px);line-height:1.3;margin:4px 0 18px;text-wrap:balance}
+h3{font-size:17px;font-weight:700;margin:32px 0 8px}
+.def{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:14px 20px 16px;margin:22px 0;max-width:46em}
+.def .tag{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+.def .tex{overflow-x:auto;overflow-y:hidden}
+.def .read{font-size:15px;color:var(--muted);margin:6px 0 0}
+.lab{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:18px 18px 16px;margin:28px 0}
+.lab-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:12px}
+.lab-h b{font-size:15px}
+.lab-h small{font-size:13px;color:var(--muted)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 24px;align-items:end}
+.ctl{min-width:0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:4px}
+.ctl output{font-family:var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;margin:6px 0;accent-color:var(--accent)}
+input.r-eps{accent-color:var(--eps)} input.r-del{accent-color:var(--delta)}
+select,input[type=text]{font:inherit;font-size:15px;width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;line-height:1.4;padding:7px 14px;border-radius:8px;border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+canvas.plot{display:block;width:100%;height:340px;margin-top:14px}
+@media (max-width:600px){canvas.plot{height:270px}}
+.readouts{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.readouts b{color:var(--ink);font-weight:500}
+.status{margin-top:10px;padding:10px 14px;border:1px solid var(--rule);border-radius:8px;background:var(--sunk);font-size:15px;line-height:1.7}
+.status.ok{border-color:var(--ok)} .status.bad{border-color:var(--bad)}
+.status .mk{font-weight:700;margin-right:4px}
+.status.ok .mk{color:var(--ok)} .status.bad .mk{color:var(--bad)}
+.obs{padding-left:1.2em;margin:0}
+.obs li{margin-bottom:8px}
+.ce{color:var(--eps);font-weight:500} .cd{color:var(--delta);font-weight:500}
+.steps{display:grid;gap:10px;margin:18px 0;max-width:46em}
+.step{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px}
+.step .k{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.06em}
+.step .tex{overflow-x:auto;overflow-y:hidden}
+.step.final{border-color:var(--accent)}
+.note{font-size:15px;color:var(--muted);border-top:1px dashed var(--rule-strong);padding-top:10px;margin-top:18px;max-width:42em}
+.game{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.game .row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.game .row input{width:9em}
+.chal{font-family:var(--f-mono);font-size:22px;color:var(--eps)}
+.err{font-size:13px;color:var(--bad);min-height:1.2em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px;perspective:600px}
+.chip{font-family:var(--f-mono);font-size:16px;padding:8px 14px;border-radius:8px;border:1px solid var(--rule-strong);background:var(--sunk);transition:transform .16s ease,background .2s,color .2s,border-color .2s}
+.chip.q{color:var(--accent)}
+.chip.changed{border-color:var(--bad);color:var(--bad)}
+.chip.flip{transform:rotateX(90deg)}
+.cmp{width:100%;border-collapse:collapse;font-size:15px;margin:14px 0}
+.cmp-wrap{overflow-x:auto;max-width:46em}
+.cmp th,.cmp td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+.cmp th{font-weight:500;color:var(--muted);font-size:13px}
+.quiz{display:grid;gap:14px;margin:18px 0;max-width:46em}
+.q{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:14px 18px;margin:0}
+.q legend{font-weight:500;padding:0;margin-bottom:8px;float:left;width:100%}
+.q .opts{clear:both;display:grid;gap:6px}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:6px;cursor:pointer;line-height:1.6}
+.q label:hover{background:var(--sunk)}
+.q input{margin-top:5px;accent-color:var(--accent)}
+.q label.right{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.q label.wrong{background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.q .fb{font-size:15px;margin-top:8px;line-height:1.7}
+.q .fb b.y{color:var(--ok)} .q .fb b.n{color:var(--bad)}
+.score{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
+details.ex{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px;max-width:46em;margin:0 0 10px}
+details.ex summary{cursor:pointer;font-weight:500}
+details.ex .tex{overflow-x:auto;overflow-y:hidden}
+.ex-q{margin:12px 0 6px;max-width:46em}
+.donebar{display:flex;align-items:center;gap:12px;margin-top:28px;font-size:14px;color:var(--muted)}
+.donebar button[aria-pressed="true"]{border-color:var(--ok);color:var(--ok)}
+footer{padding-block:40px 64px;border-top:1px solid var(--rule);color:var(--muted);font-size:14px}
+mjx-container[display="true"]{margin:.6em 0!important}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+.topbar .home{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;border:1px solid var(--rule);border-radius:6px;padding:1px 8px}
+.topbar .home:hover{color:var(--ink);border-color:var(--rule-strong)}
+.topbar .name{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.nextch{display:block;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px;max-width:46em;margin-bottom:14px;font-size:17px}
+.nextch:hover{border-color:var(--accent)}
+.nextch small{display:block;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.def.tex{overflow-x:auto;overflow-y:hidden}
+.steps{grid-template-columns:minmax(0,1fr)}.step,.q,.lab,.def{min-width:0}
+.prose p,.ex-q,details.ex p,.def p,.step p{overflow-wrap:anywhere}
+.topbar .home{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;border:1px solid var(--rule);border-radius:6px;padding:1px 8px}
+.topbar .home:hover{color:var(--ink);border-color:var(--rule-strong)}
+.topbar .name{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.nextch{display:block;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px;max-width:46em;margin-bottom:14px;font-size:17px}
+.nextch:hover{border-color:var(--accent)}
+.nextch small{display:block;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.def.tex{overflow-x:auto;overflow-y:hidden}
+.steps{grid-template-columns:minmax(0,1fr)}.step,.q,.lab,.def{min-width:0}
+.prose p,.ex-q,details.ex p,.def p,.step p{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="gutter">
+    <a class="home" href="/">目录</a>
+    <span class="name">收敛准则</span>
+    <nav id="topnav" aria-label="章节">
+      <a href="#s1">§1</a><a href="#s2">§2</a><a href="#s3">§3</a><a href="#s4">§4</a><a href="#s5">§5</a>
+    </nav>
+    <div class="prog"><span id="prog-txt">已掌握 0 / 5</span><span class="bar"><i id="prog-bar"></i></span></div>
+  </div>
+</header>
+
+<main>
+<div class="gutter hero">
+  <p class="eyebrow">数学分析 · 第三章 · 自学课件</p>
+  <h1>收敛准则：单调有界与柯西</h1>
+  <p class="lede">前两章的方法都要先知道极限是多少，再去验证。可很多数列的极限事先根本猜不出来，比如 (1 + 1/n)ⁿ。这一章给出只看数列本身就能判断收敛的准则：单调有界定理、柯西收敛准则和致密性定理。它们都依赖实数的完备性，在有理数里不成立。</p>
+  <div class="legend" aria-label="图例">
+    <span><i class="sw" style="background:var(--eps-soft);border:1.5px solid var(--eps)"></i>ε 误差带</span>
+    <span><i class="sw" style="background:var(--accent)"></i>上确界、区间等辅助量</span>
+    <span><i class="sw" style="background:var(--ok)"></i>满足条件</span>
+    <span><i class="sw" style="background:var(--s2)"></i>第二个数列 / 子列</span>
+  </div>
+  <ol class="toc" id="toc">
+    <li data-s="s1"><a href="#s1"><span class="n">§1</span><span class="t">单调有界定理</span><span class="m">15 分钟</span></a></li>
+    <li data-s="s2"><a href="#s2"><span class="n">§2</span><span class="t">重要极限 e</span><span class="m">15 分钟</span></a></li>
+    <li data-s="s3"><a href="#s3"><span class="n">§3</span><span class="t">柯西收敛准则</span><span class="m">20 分钟</span></a></li>
+    <li data-s="s4"><a href="#s4"><span class="n">§4</span><span class="t">子列与致密性定理</span><span class="m">15 分钟</span></a></li>
+    <li data-s="s5"><a href="#s5"><span class="n">§5</span><span class="t">自测与练习</span><span class="m">20 分钟</span></a></li>
+  </ol>
+</div>
+
+<!-- §1 -->
+<section class="lesson gutter" id="s1">
+  <div class="secno">§1</div>
+  <h2>单调有界定理</h2>
+  <div class="prose">
+    <p>一个数列只升不降，又不能超过某个数，它最终会停在哪里？答案是它所有项的上确界。这需要实数的一条基本性质。</p>
+  </div>
+  <div class="def">
+    <div class="tag">确界原理（实数完备性）</div>
+    <p style="margin:4px 0 0">非空且有上界的实数集必有上确界 β = sup S，即最小的上界。它有两条刻画：</p>
+    <p style="margin:4px 0 0">(i) 对所有 s ∈ S，s ≤ β；　(ii) 任给 ε &gt; 0，β − ε 不再是上界，即存在 s ∈ S 使 s &gt; β − ε。</p>
+  </div>
+  <div class="def">
+    <div class="tag">定理 3.1（单调有界定理）</div>
+    <p style="margin:4px 0 0">单调递增且有上界的数列必收敛，极限是 \(\sup\{a_n\}\)。单调递减且有下界的数列同理，极限是下确界。</p>
+  </div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 1 · 越过 β − ε 的那一项</b><small>β − ε 不是上界，所以总有一项越过它；单调性让后面的项都跟上</small></div>
+    <div class="controls">
+      <div class="ctl"><label for="m-seq">数列（都单调递增）</label>
+        <select id="m-seq">
+          <option value="rec">a₁ = 0，aₙ₊₁ = √(2 + aₙ)</option>
+          <option value="basel">aₙ = 1 + 1/2² + … + 1/n²</option>
+          <option value="e">aₙ = (1 + 1/n)ⁿ</option>
+        </select></div>
+      <div class="ctl"><label for="m-eps"><span>误差 <span class="ce">ε</span></span><output id="m-eps-o">0.1</output></label>
+        <input type="range" class="r-eps" id="m-eps" min="0" max="100" step="any" value="70"></div>
+    </div>
+    <canvas class="plot" id="m-cv" aria-label="单调递增数列散点图，标出上确界 β 与 β − ε"></canvas>
+    <div class="readouts" id="m-read"></div>
+    <div class="status" id="m-status"></div>
+  </div>
+  <div class="steps" id="steps-m">
+    <div class="step"><div class="k">第 1 步 · 候选极限</div>
+      <p>数列有上界，由确界原理，\(\beta=\sup\{a_n\}\) 存在。我们证明 \(a_n\to\beta\)。</p></div>
+    <div class="step" hidden><div class="k">第 2 步 · 越过 β − ε</div>
+      <p>任给 ε &gt; 0，由刻画 (ii)，存在某一项 \(a_N\gt\beta-\varepsilon\)。</p></div>
+    <div class="step final" hidden><div class="k">第 3 步 · 单调性收尾</div>
+      <p>当 n &gt; N 时，由单调递增和刻画 (i)，</p>
+      <div class="tex">\[\beta-\varepsilon\lt a_N\le a_n\le\beta\lt\beta+\varepsilon,\]</div>
+      <p>即 \(|a_n-\beta|\lt\varepsilon\)。∎</p></div>
+  </div>
+  <div class="btns"><button id="steps-m-next" class="primary">下一步</button><button id="steps-m-all">全部展开</button></div>
+  <h3>例：递推数列求极限</h3>
+  <div class="prose">
+    <p>对 \(a_1=0\)，\(a_{n+1}=\sqrt{2+a_n}\)：用归纳法可证 \(a_n\lt2\)（若 \(a_n\lt2\)，则 \(a_{n+1}\lt\sqrt4=2\)）和 \(a_n\lt a_{n+1}\)（因为 \(a_n\lt2\) 时 \(a_n^2\lt a_n+2\)）。单调有界，所以收敛。设极限为 L，对递推式两边取极限得 \(L=\sqrt{2+L}\)，解得 L = 2（舍去负根）。</p>
+    <p>顺序很重要：必须先证明收敛，才能对递推式两边取极限。否则对 \(a_{n+1}=2a_n\)、\(a_1=1\) 也能“解出” L = 0，而这个数列明明趋于无穷。</p>
+  </div>
+  <p class="note">在有理数里，这个定理不成立：1, 1.4, 1.41, 1.414, … 都是有理数，单调递增且小于 2，但它的极限 √2 不是有理数。确界原理正是实数比有理数多出来的东西。</p>
+  <div class="donebar"><button data-done="s1" aria-pressed="false">标记为已掌握</button><span>下一节：用它定义 e</span></div>
+</section>
+
+<!-- §2 -->
+<section class="lesson gutter" id="s2">
+  <div class="secno">§2</div>
+  <h2>重要极限 e</h2>
+  <div class="prose">
+    <p>本金 1 元，年利率 100%。一年结算一次，年底得 2 元；半年结算一次，得 \((1+\frac12)^2=2.25\) 元；结算越频繁，钱越多。但会不会无限多？</p>
+  </div>
+  <div class="cmp-wrap"><table class="cmp">
+    <tr><th>结算方式</th><th>每年结算次数 n</th><th>年底本息 (1 + 1/n)ⁿ</th></tr>
+    <tr><td>按年</td><td>1</td><td style="font-family:var(--f-mono)">2.000000</td></tr>
+    <tr><td>按半年</td><td>2</td><td style="font-family:var(--f-mono)">2.250000</td></tr>
+    <tr><td>按季度</td><td>4</td><td style="font-family:var(--f-mono)">2.441406</td></tr>
+    <tr><td>按月</td><td>12</td><td style="font-family:var(--f-mono)">2.613035</td></tr>
+    <tr><td>按天</td><td>365</td><td style="font-family:var(--f-mono)">2.714567</td></tr>
+    <tr><td>按小时</td><td>8 760</td><td style="font-family:var(--f-mono)">2.718127</td></tr>
+    <tr><td>按分钟</td><td>525 600</td><td style="font-family:var(--f-mono)">2.718279</td></tr>
+  </table></div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 2 · 一个从下往上，一个从上往下</b><small>uₙ = (1 + 1/n)ⁿ 递增，vₙ = (1 + 1/n)ⁿ⁺¹ 递减，e 被夹在中间</small></div>
+    <div class="controls">
+      <div class="ctl"><label for="e-n"><span>n</span><output id="e-n-o">5</output></label><input type="range" id="e-n" min="1" max="40" step="1" value="5"></div>
+      <div class="ctl btns"><button id="e-play" class="primary">播放</button></div>
+    </div>
+    <canvas class="plot" id="e-cv" aria-label="uₙ 与 vₙ 两个数列的散点图，中间是 e"></canvas>
+    <div class="readouts" id="e-read"></div>
+  </div>
+  <div class="steps" id="steps-e">
+    <div class="step"><div class="k">第 1 步 · 单调递增</div>
+      <p>对 n 个 \(1+\frac1n\) 和一个 1 用均值不等式（几何平均 ≤ 算术平均）：</p>
+      <div class="tex">\[\sqrt[n+1]{\left(1+\tfrac1n\right)^n\cdot1}\lt\frac{n\left(1+\frac1n\right)+1}{n+1}=1+\frac1{n+1}.\]</div>
+      <p>两边 n + 1 次方，得 \(u_n\lt u_{n+1}\)。</p></div>
+    <div class="step" hidden><div class="k">第 2 步 · 有上界</div>
+      <p>二项式展开后，把每个因子 \(1-\frac jn\) 放大成 1：</p>
+      <div class="tex">\[u_n=\sum_{k=0}^{n}\frac{1}{k!}\left(1-\tfrac1n\right)\cdots\left(1-\tfrac{k-1}n\right)\le\sum_{k=0}^{n}\frac1{k!}\le1+1+\frac12+\frac1{2^2}+\cdots\lt3.\]</div>
+      <p>这里用到 k ≥ 1 时 \(k!\ge2^{k-1}\)。</p></div>
+    <div class="step final" hidden><div class="k">第 3 步 · 定义 e</div>
+      <p>由单调有界定理，\(u_n\) 收敛。记</p>
+      <div class="tex">\[e=\lim_{n\to\infty}\left(1+\frac1n\right)^n\approx2.718281828.\]</div>
+      <p>又 \(v_n=u_n\left(1+\frac1n\right)\to e\cdot1=e\)。∎ 由于 \(u_n\) 严格递增，每个 \(u_n\lt e\)；用类似的均值不等式可证 \(v_n\) 严格递减，所以每个 \(v_n\gt e\)。</p></div>
+  </div>
+  <div class="btns"><button id="steps-e-next" class="primary">下一步</button><button id="steps-e-all">全部展开</button></div>
+  <p class="note">这里 e 是作为一个数列的极限被定义出来的。我们并不知道它的值，单调有界定理保证了它存在。这正是本章准则的用处。</p>
+  <div class="donebar"><button data-done="s2" aria-pressed="false">标记为已掌握</button><span>下一节：不单调的数列怎么办</span></div>
+</section>
+
+<!-- §3 -->
+<section class="lesson gutter" id="s3">
+  <div class="secno">§3</div>
+  <h2>柯西收敛准则</h2>
+  <div class="prose">
+    <p>单调有界定理只管单调数列。对一般数列，柯西的想法是：不问各项离极限多近，只问各项彼此离得多近。</p>
+  </div>
+  <div class="def">
+    <div class="tag">定理 3.2（柯西收敛准则）</div>
+    <p style="margin:4px 0 0">数列 \(\{a_n\}\) 收敛，当且仅当</p>
+    <div class="tex">\[\forall\,\varepsilon>0,\ \exists\,N,\ \forall\,m,n>N:\ |a_m-a_n|\lt\varepsilon\]</div>
+    <p class="read">满足右边条件的数列叫柯西数列。和定义 1.1 对比：式子里没有 A。门槛之后的所有项挤在一个高度不到 <span class="ce">ε</span> 的窗口里，窗口放在哪里无所谓。</p>
+  </div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 3 · 柯西窗口</b><small>窗口高度是 ε，位置由尾部的项自己决定</small></div>
+    <div class="controls">
+      <div class="ctl"><label for="c-seq">数列</label>
+        <select id="c-seq">
+          <option value="alt">sₙ = 1 − 1/2 + 1/3 − … ± 1/n</option>
+          <option value="cos">sₙ = Σ cos k / k²（k = 1…n）</option>
+          <option value="harm">Hₙ = 1 + 1/2 + … + 1/n（发散）</option>
+          <option value="sqrt">aₙ = sin √n（发散）</option>
+        </select></div>
+      <div class="ctl"><label for="c-eps"><span>误差 <span class="ce">ε</span></span><output id="c-eps-o">0.1</output></label>
+        <input type="range" class="r-eps" id="c-eps" min="0.01" max="0.6" step="0.01" value="0.1"></div>
+    </div>
+    <canvas class="plot" id="c-cv" aria-label="数列散点图，叠加高度为 ε 的柯西窗口"></canvas>
+    <div class="readouts" id="c-read"></div>
+    <div class="status" id="c-status"></div>
+  </div>
+  <h3>必要性：收敛 ⇒ 柯西</h3>
+  <p class="prose">若 \(a_n\to A\)，对 ε/2 取门槛 N，则 m, n &gt; N 时 \(|a_m-a_n|\le|a_m-A|+|A-a_n|\lt\varepsilon\)。充分性要难得多，需要 §4 的致密性定理，证明放在 §4 末尾。</p>
+  <h3>用否定形式证明发散</h3>
+  <div class="prose">
+    <p>“不是柯西数列”写成：\(\exists\,\varepsilon_0>0,\ \forall N,\ \exists\,m,n>N:\ |a_m-a_n|\ge\varepsilon_0\)。调和数列就是这样：</p>
+  </div>
+  <div class="tex def">\[H_{2n}-H_n=\frac1{n+1}+\frac1{n+2}+\cdots+\frac1{2n}\ge n\cdot\frac1{2n}=\frac12.\]</div>
+  <p class="prose">取 ε₀ = 1/2，对任何 N，取 n = N + 1、m = 2n 即可。所以 Hₙ 发散，尽管相邻两项的差 1/(n + 1) 趋于 0。实验 3 里的 sin √n 也一样：相邻差趋于 0，但不是柯西数列。</p>
+  <div class="donebar"><button data-done="s3" aria-pressed="false">标记为已掌握</button><span>下一节：从有界数列里挑出收敛的部分</span></div>
+</section>
+
+<!-- §4 -->
+<section class="lesson gutter" id="s4">
+  <div class="secno">§4</div>
+  <h2>子列与致密性定理</h2>
+  <div class="prose">
+    <p>从 \(\{a_n\}\) 中按下标递增的顺序挑出无穷多项 \(a_{n_1},a_{n_2},\dots\)（\(n_1\lt n_2\lt\cdots\)），得到子列 \(\{a_{n_k}\}\)。数列收敛于 A，当且仅当它的每个子列都收敛于 A。所以只要找到两个极限不同的子列，就能断定数列发散，例如 (−1)ⁿ 的奇数项和偶数项。</p>
+  </div>
+  <div class="def">
+    <div class="tag">定理 3.3（致密性定理，Bolzano–Weierstrass）</div>
+    <p style="margin:4px 0 0">有界数列必有收敛子列。</p>
+  </div>
+  <div class="prose"><p>证明用二分法：把区间对半分，至少有一半含有数列的无穷多项，留下这一半，再分。区间一次次减半，套住一个点；每次从当前区间里挑一项，下标比上一次大，就得到收敛于这个点的子列。</p></div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 4 · 二分法挑子列</b><small>数列 aₙ = sin n，在 [−1, 1] 里乱跳；用前 20 万项代表“无穷多项”</small></div>
+    <div class="btns"><button id="w-step" class="primary">二分一次</button><button id="w-auto">自动二分到底</button><button id="w-reset">重来</button></div>
+    <canvas class="plot" id="w-cv" aria-label="二分法：每一步保留的区间和挑出的子列项"></canvas>
+    <div class="readouts" id="w-read"></div>
+    <div class="status" id="w-status"></div>
+  </div>
+  <h3>回到柯西准则：充分性的证明</h3>
+  <div class="steps" id="steps-w">
+    <div class="step"><div class="k">第 1 步 · 柯西数列有界</div>
+      <p>对 ε = 1 取门槛 N，n &gt; N 时 \(|a_n-a_{N+1}|\lt1\)。再加上前 N 项，和定理 2.2 一样得到有界。</p></div>
+    <div class="step" hidden><div class="k">第 2 步 · 挑出收敛子列</div>
+      <p>由致密性定理，存在子列 \(a_{n_k}\to A\)。</p></div>
+    <div class="step final" hidden><div class="k">第 3 步 · 整个数列跟着收敛</div>
+      <p>任给 ε，取柯西条件的门槛 N，再取 k 足够大使 \(n_k>N\) 且 \(|a_{n_k}-A|\lt\varepsilon\)。当 n &gt; N 时</p>
+      <div class="tex">\[|a_n-A|\le|a_n-a_{n_k}|+|a_{n_k}-A|\lt2\varepsilon.\]</div>
+      <p>所以 \(a_n\to A\)。∎</p></div>
+  </div>
+  <div class="btns"><button id="steps-w-next" class="primary">下一步</button><button id="steps-w-all">全部展开</button></div>
+  <p class="note">本章的三个准则一环扣一环：确界原理 ⇒ 单调有界定理；确界原理（或区间套）⇒ 致密性定理 ⇒ 柯西准则的充分性。它们都是实数完备性的不同说法。</p>
+  <div class="donebar"><button data-done="s4" aria-pressed="false">标记为已掌握</button><span>下一节：检验一下</span></div>
+</section>
+
+<!-- §5 -->
+<section class="lesson gutter" id="s5">
+  <div class="secno">§5</div>
+  <h2>自测与练习</h2>
+  <p class="prose">五道选择题检查概念，四道练习题需要动笔。</p>
+  <div class="score" id="quiz-score">已答对 0 / 5</div>
+  <div class="quiz" id="quiz"></div>
+
+  <h3>练习题</h3>
+  <p class="ex-q"><b>练习 1</b>　设 \(a_1=\sqrt2\)，\(a_{n+1}=\sqrt{2a_n}\)。证明 \(\{a_n\}\) 收敛并求极限。</p>
+  <details class="ex"><summary>提示</summary><p>仿照 §1 的例子：归纳证明 aₙ &lt; 2 和单调递增，再对递推式取极限。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <p>若 \(a_n\lt2\)，则 \(a_{n+1}=\sqrt{2a_n}\lt2\)；又 \(a_{n+1}^2-a_n^2=a_n(2-a_n)\gt0\)，故递增。单调有界，收敛。设极限为 L，由 \(L=\sqrt{2L}\) 且 \(L\ge\sqrt2\) 得 L = 2。</p></details>
+
+  <p class="ex-q"><b>练习 2</b>　用柯西准则证明 \(a_n=\displaystyle\sum_{k=1}^{n}\frac1{k^2}\) 收敛。</p>
+  <details class="ex"><summary>提示</summary><p>k ≥ 2 时 \(\dfrac1{k^2}\lt\dfrac1{k(k-1)}=\dfrac1{k-1}-\dfrac1k\)，求和会裂项相消。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <p>设 m &gt; n，则</p>
+    <div class="tex">\[0\lt a_m-a_n=\sum_{k=n+1}^{m}\frac1{k^2}\lt\sum_{k=n+1}^{m}\left(\frac1{k-1}-\frac1k\right)=\frac1n-\frac1m\lt\frac1n.\]</div>
+    <p>任给 ε，取 \(N=\lceil1/\varepsilon\rceil\)，m &gt; n &gt; N 时 \(|a_m-a_n|\lt\frac1n\lt\varepsilon\)。∎（它的极限是 π²/6，这是欧拉的结果，这里不需要。）</p></details>
+
+  <p class="ex-q"><b>练习 3</b>　求 \(\displaystyle\lim_{n\to\infty}\left(1+\frac1n\right)^{2n}\) 和 \(\displaystyle\lim_{n\to\infty}\left(1-\frac1n\right)^{n}\)。</p>
+  <details class="ex"><summary>提示</summary><p>第一个用乘法法则。第二个写成 \(\left(\frac{n-1}{n}\right)^n=\dfrac{1}{\left(1+\frac{1}{n-1}\right)^{n}}\)。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <p>\(\left(1+\frac1n\right)^{2n}=\left[\left(1+\frac1n\right)^{n}\right]^2\to e^2\)。</p>
+    <p>\(\left(1-\frac1n\right)^{n}=\dfrac{1}{\left(1+\frac1{n-1}\right)^{n-1}\left(1+\frac1{n-1}\right)}\to\dfrac1{e\cdot1}=\dfrac1e\)。</p></details>
+
+  <p class="ex-q"><b>练习 4</b>　用“不是柯西数列”的形式证明 \(a_n=\ln n\) 发散。</p>
+  <details class="ex"><summary>提示</summary><p>找一对下标，让差值是个固定的正数。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <p>取 ε₀ = ln 2。对任何 N，取 n = N + 1，m = 2n，则 \(|a_m-a_n|=\ln2n-\ln n=\ln2\ge\varepsilon_0\)。所以 \(\ln n\) 不是柯西数列，发散。∎</p></details>
+  <div class="donebar"><button data-done="s5" aria-pressed="false">标记为已掌握</button><span>本章完</span></div>
+</section>
+</main>
+
+<footer class="gutter">
+  <a class="nextch" href="/analysis/02-properties/"><small>上一章 · 第二章</small>← 极限的性质与运算</a>
+  <p>下一章预告：函数的连续性，包括间断点的分类，以及闭区间上连续函数的介值定理和最值定理。它们同样依赖本章的实数完备性。</p>
+</footer>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code','select','option','canvas'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const MONO = '12px "JetBrains Mono", ui-monospace, monospace';
+const redraws = [];
+const redrawAll = () => redraws.forEach(f => f());
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redrawAll); } catch (e) {}
+new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(redrawAll);
+
+function trim(v, d) { const s = (+v).toFixed(d); return s.includes('.') ? s.replace(/0+$/, '').replace(/\.$/, '') : s; }
+function fmt(v) {
+  if (v === 0) return '0';
+  const a = Math.abs(v);
+  if (a >= 100) return trim(v, 1);
+  if (a >= 1) return trim(v, 3);
+  if (a >= 0.001) return trim(v, 4);
+  return v.toExponential(2);
+}
+function niceTicks(a, b, count) {
+  const step0 = (b - a) / count, mag = Math.pow(10, Math.floor(Math.log10(step0))), r = step0 / mag;
+  const step = (r >= 7.5 ? 10 : r >= 3.5 ? 5 : r >= 1.5 ? 2 : 1) * mag;
+  const out = [];
+  for (let t = Math.ceil(a / step) * step; t <= b + step * 1e-6; t += step) out.push(Math.abs(t) < step * 1e-6 ? 0 : t);
+  const dec = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+  return { ticks: out, dec };
+}
+function Plot(canvas, draw) {
+  const ctx = canvas.getContext('2d');
+  const p = { ctx, pad: { l: 46, r: 14, t: 14, b: 30 }, v: { x0: 0, x1: 1, y0: 0, y1: 1 } };
+  p.size = () => {
+    const dpr = window.devicePixelRatio || 1, W = canvas.clientWidth, H = canvas.clientHeight;
+    if (canvas.width !== Math.round(W * dpr) || canvas.height !== Math.round(H * dpr)) { canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); p.W = W; p.H = H;
+    p.pw = W - p.pad.l - p.pad.r; p.ph = H - p.pad.t - p.pad.b;
+  };
+  p.X = x => p.pad.l + (x - p.v.x0) / (p.v.x1 - p.v.x0) * p.pw;
+  p.Y = y => p.pad.t + (p.v.y1 - y) / (p.v.y1 - p.v.y0) * p.ph;
+  p.frame = (xc, yc) => {
+    const tx = niceTicks(p.v.x0, p.v.x1, xc || 6), ty = niceTicks(p.v.y0, p.v.y1, yc || 5);
+    ctx.lineWidth = 1; ctx.strokeStyle = tok('--grid');
+    ctx.beginPath();
+    tx.ticks.forEach(t => { const x = Math.round(p.X(t)) + .5; ctx.moveTo(x, p.pad.t); ctx.lineTo(x, p.pad.t + p.ph); });
+    ty.ticks.forEach(t => { const y = Math.round(p.Y(t)) + .5; ctx.moveTo(p.pad.l, y); ctx.lineTo(p.pad.l + p.pw, y); });
+    ctx.stroke();
+    ctx.strokeStyle = tok('--rule-strong'); ctx.beginPath();
+    if (p.v.y0 <= 0 && p.v.y1 >= 0) { const y = Math.round(p.Y(0)) + .5; ctx.moveTo(p.pad.l, y); ctx.lineTo(p.pad.l + p.pw, y); }
+    if (p.v.x0 <= 0 && p.v.x1 >= 0) { const x = Math.round(p.X(0)) + .5; ctx.moveTo(x, p.pad.t); ctx.lineTo(x, p.pad.t + p.ph); }
+    ctx.stroke();
+    ctx.fillStyle = tok('--muted'); ctx.font = MONO;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    tx.ticks.forEach(t => ctx.fillText(t.toFixed(tx.dec), p.X(t), p.pad.t + p.ph + 8));
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ty.ticks.forEach(t => ctx.fillText(t.toFixed(ty.dec), p.pad.l - 8, p.Y(t)));
+  };
+  p.clip = () => { ctx.save(); ctx.beginPath(); ctx.rect(p.pad.l, p.pad.t, p.pw, p.ph); ctx.clip(); };
+  p.unclip = () => ctx.restore();
+  p.hline = (y, color, dash, w) => { ctx.strokeStyle = color; ctx.lineWidth = w || 1.2; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(p.pad.l, p.Y(y)); ctx.lineTo(p.pad.l + p.pw, p.Y(y)); ctx.stroke(); ctx.setLineDash([]); };
+  p.vline = (x, color, dash, w) => { ctx.strokeStyle = color; ctx.lineWidth = w || 1.2; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(p.X(x), p.pad.t); ctx.lineTo(p.X(x), p.pad.t + p.ph); ctx.stroke(); ctx.setLineDash([]); };
+  p.band = (y0, y1, color, alpha) => { ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.fillRect(p.pad.l, p.Y(Math.max(y0, y1)), p.pw, Math.abs(p.Y(y0) - p.Y(y1))); ctx.globalAlpha = 1; };
+  p.dot = (x, y, r, fill, ring) => { ctx.beginPath(); ctx.arc(p.X(x), p.Y(y), r, 0, 7); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (ring) { ctx.lineWidth = 2; ctx.strokeStyle = ring; ctx.stroke(); } };
+  p.label = (txt, x, y, color, align, base) => {
+    ctx.font = MONO; ctx.textAlign = align || 'left'; ctx.textBaseline = base || 'middle';
+    const w = ctx.measureText(txt).width, ax = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x;
+    ctx.fillStyle = tok('--surface'); ctx.globalAlpha = .85; ctx.fillRect(ax - 3, y - 8, w + 6, 16); ctx.globalAlpha = 1;
+    ctx.fillStyle = color; ctx.fillText(txt, x, y);
+  };
+  if (window.ResizeObserver) new ResizeObserver(() => draw()).observe(canvas); else window.addEventListener('resize', draw);
+  redraws.push(draw);
+  return p;
+}
+function rafPlay(ms, step, done) {
+  let t0 = null, id = 0;
+  const f = ts => { if (t0 === null) t0 = ts; const u = Math.min(1, (ts - t0) / ms); step(u); if (u < 1) id = requestAnimationFrame(f); else done && done(); };
+  id = requestAnimationFrame(f);
+  return () => cancelAnimationFrame(id);
+}
+function stepper(id) {
+  const steps = [...document.querySelectorAll('#' + id + ' .step')];
+  const next = $('#' + id + '-next'), all = $('#' + id + '-all');
+  const refresh = () => { const left = steps.some(s => s.hidden); next.hidden = !left; all.hidden = !left; };
+  next.addEventListener('click', () => { const s = steps.find(s => s.hidden); if (s) s.hidden = false; refresh(); });
+  all.addEventListener('click', () => { steps.forEach(s => s.hidden = false); refresh(); });
+  refresh();
+}
+function buildQuiz(Q) {
+  const box = $('#quiz'), scoreEl = $('#quiz-score'), right = new Set();
+  scoreEl.textContent = '已答对 0 / ' + Q.length;
+  Q.forEach((it, i) => {
+    const fs = document.createElement('fieldset'); fs.className = 'q';
+    fs.innerHTML = '<legend>' + (i + 1) + '. ' + it.q + '</legend><div class="opts">' +
+      it.o.map((t, j) => '<label><input type="radio" name="q' + i + '" id="q' + i + '-' + j + '" value="' + j + '"><span>' + 'ABCD'[j] + '. ' + t + '</span></label>').join('') +
+      '</div><div class="btns" style="margin-top:10px"><button type="button" id="q' + i + '-go">检查答案</button></div><div class="err" id="q' + i + '-err" role="alert"></div><div class="fb" id="q' + i + '-fb" aria-live="polite"></div>';
+    box.appendChild(fs);
+    fs.querySelectorAll('input').forEach(r => r.addEventListener('change', () => { $('#q' + i + '-err').textContent = ''; }));
+    $('#q' + i + '-go').addEventListener('click', () => {
+      const pick = fs.querySelector('input:checked');
+      if (!pick) { $('#q' + i + '-err').textContent = '先选一个选项。'; return; }
+      const v = +pick.value;
+      fs.querySelectorAll('label').forEach((l, j) => { l.classList.toggle('right', j === it.a); l.classList.toggle('wrong', j === v && v !== it.a); });
+      $('#q' + i + '-fb').innerHTML = (v === it.a ? '<b class="y">正确。</b>' : '<b class="n">不对，正确答案是 ' + 'ABCD'[it.a] + '。</b>') + it.e;
+      if (v === it.a) right.add(i); else right.delete(i);
+      scoreEl.textContent = '已答对 ' + right.size + ' / ' + Q.length;
+    });
+  });
+}
+function progress(KEY, ids) {
+  let done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { done = {}; }
+  function render() {
+    const n = ids.filter(id => done[id]).length;
+    $('#prog-txt').textContent = '已掌握 ' + n + ' / ' + ids.length;
+    $('#prog-bar').style.width = (n / ids.length * 100) + '%';
+    document.querySelectorAll('[data-done]').forEach(b => {
+      const on = !!done[b.dataset.done];
+      b.setAttribute('aria-pressed', on); b.textContent = on ? '✓ 已掌握' : '标记为已掌握';
+    });
+    document.querySelectorAll('#toc li').forEach(li => li.classList.toggle('done', !!done[li.dataset.s]));
+    document.querySelectorAll('#topnav a').forEach(a => a.classList.toggle('done', !!done[a.getAttribute('href').slice(1)]));
+  }
+  document.querySelectorAll('[data-done]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.done; done[id] = !done[id];
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {}
+    render();
+  }));
+  render();
+}
+function seg(group) {
+  const btns = [...document.querySelectorAll('#' + group + ' button')];
+  return (onChange) => btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(x => { const on = x === b; x.classList.toggle('primary', on); x.setAttribute('aria-pressed', on); });
+    onChange(b.dataset.v);
+  }));
+}
+
+/* ---------- §1 monotone bounded ---------- */
+(function(){
+  const M = 20000;
+  const build = key => {
+    const a = new Float64Array(M + 1);
+    if (key === 'rec') { a[1] = 0; for (let n = 1; n < M; n++) a[n + 1] = Math.sqrt(2 + a[n]); }
+    else if (key === 'basel') { let s = 0; for (let n = 1; n <= M; n++) { s += 1 / (n * n); a[n] = s; } }
+    else for (let n = 1; n <= M; n++) a[n] = Math.pow(1 + 1 / n, n);
+    return a;
+  };
+  const SEQ = {
+    rec: { beta: 2, y: [-0.1, 2.15], bl: 'β = 2' },
+    basel: { beta: Math.PI * Math.PI / 6, y: [0.95, 1.72], bl: 'β = π²/6' },
+    e: { beta: Math.E, y: [1.95, 2.8], bl: 'β = e' }
+  };
+  const cache = {};
+  const sel = $('#m-seq'), eI = $('#m-eps');
+  const epsOf = t => 0.5 * Math.pow(10, -2.2 * (1 - t / 100));
+  const P = Plot($('#m-cv'), draw);
+  function draw() {
+    const key = sel.value, s = SEQ[key], a = cache[key] || (cache[key] = build(key));
+    const e = epsOf(+eI.value), b = s.beta;
+    let N = 1; while (N < M && !(a[N] > b - e)) N++;
+    const xMax = Math.min(600, Math.max(20, Math.ceil(N * 1.5) + 5));
+    P.v = { x0: 0, x1: xMax + 1, y0: s.y[0], y1: s.y[1] };
+    P.size(); P.frame(6, 5);
+    const epsC = tok('--eps'), acc = tok('--accent'), ok = tok('--ok'), mu = tok('--muted'), ink = tok('--ink');
+    P.clip();
+    P.band(b - e, b, epsC, .14);
+    P.hline(b - e, epsC, [5, 4]); P.hline(b, acc, [], 1.8);
+    const r = xMax > 250 ? 1.8 : xMax > 80 ? 2.6 : 3.6;
+    for (let n = 1; n <= xMax; n++) P.dot(n, a[n], n === N ? 5.5 : r, n < N ? mu : n === N ? epsC : ok, n === N ? ink : null);
+    P.unclip();
+    P.label(s.bl + ' = sup aₙ', P.pad.l + P.pw - 4, P.Y(b) - 11, acc, 'right');
+    P.label('β − ε', P.pad.l + P.pw - 4, P.Y(b - e) + 11, epsC, 'right');
+    P.label('a_N，N = ' + N, Math.min(P.X(N) + 10, P.pad.l + P.pw - 110), P.Y(a[N]) + 16, ink, 'left');
+    $('#m-eps-o').textContent = fmt(e);
+    $('#m-read').innerHTML = '<span>ε = <b>' + fmt(e) + '</b></span><span>β = <b>' + b.toFixed(6) + '</b></span><span>N = <b>' + N + '</b></span><span>a_N = <b>' + a[N].toFixed(6) + '</b></span>';
+    const st = $('#m-status'); st.className = 'status ok';
+    st.innerHTML = '<span class="mk">✓</span>β − ε = ' + (b - e).toFixed(4) + ' 不是上界，第 ' + N + ' 项是第一个越过它的项。数列递增且不超过 β，所以从第 ' + N + ' 项起，每一项都在 (β − ε, β] 里（绿色）。ε 越小，要等的项越多' + (key === 'rec' ? '；这个递推数列收敛得极快。' : key === 'basel' ? '；这个数列收敛很慢，β − aₙ 大约是 1/n。' : '；e − aₙ 大约是 e/(2n)。');
+  }
+  sel.addEventListener('change', draw); eI.addEventListener('input', draw);
+  draw();
+})();
+
+/* ---------- §2 e ---------- */
+(function(){
+  const nI = $('#e-n');
+  let stop = null;
+  const u = n => Math.pow(1 + 1 / n, n), v = n => Math.pow(1 + 1 / n, n + 1);
+  const P = Plot($('#e-cv'), draw);
+  function draw() {
+    const k = +nI.value;
+    P.v = { x0: 0, x1: 41, y0: 1.9, y1: 4.2 };
+    P.size(); P.frame(6, 5);
+    const acc = tok('--accent'), s2 = tok('--s2'), ink = tok('--ink'), mu = tok('--muted'), c = P.ctx;
+    P.clip();
+    P.hline(Math.E, ink, [6, 4], 1.4);
+    P.vline(k, mu, [3, 3], 1);
+    c.strokeStyle = ink; c.lineWidth = 2; c.beginPath(); c.moveTo(P.X(k), P.Y(u(k))); c.lineTo(P.X(k), P.Y(v(k))); c.stroke();
+    for (let n = 1; n <= 40; n++) { P.dot(n, u(n), n === k ? 5.5 : 3.4, acc); P.dot(n, v(n), n === k ? 5.5 : 3.4, s2); }
+    P.unclip();
+    P.label('e ≈ 2.71828', P.pad.l + P.pw - 4, P.Y(Math.E) - 11, ink, 'right');
+    P.label('vₙ', P.X(1) + 10, P.Y(v(1)), s2, 'left');
+    P.label('uₙ', P.X(1) + 10, P.Y(u(1)), acc, 'left');
+    $('#e-n-o').textContent = k;
+    $('#e-read').innerHTML = '<span style="color:var(--accent)">uₙ = <b>' + u(k).toFixed(6) + '</b></span><span style="color:var(--s2)">vₙ = <b>' + v(k).toFixed(6) + '</b></span><span>vₙ − uₙ = uₙ/n = <b>' + (v(k) - u(k)).toFixed(6) + '</b></span><span>e = <b>2.718282</b></span>';
+  }
+  nI.addEventListener('input', () => { stop && stop(); draw(); });
+  $('#e-play').addEventListener('click', () => {
+    stop && stop();
+    stop = rafPlay(5000, t => { nI.value = Math.max(1, Math.round(1 + 39 * t)); draw(); }, () => { stop = null; });
+  });
+  draw();
+})();
+
+/* ---------- §3 Cauchy window ---------- */
+(function(){
+  const M = 20000;
+  const SEQ = {
+    alt: { gen: () => { const a = new Float64Array(M + 1); let s = 0; for (let n = 1; n <= M; n++) { s += (n % 2 ? 1 : -1) / n; a[n] = s; } return a; }, div: 80, note: '这个数列的极限其实是 ln 2 ≈ 0.6931，但判断收敛时用不到。' },
+    cos: { gen: () => { const a = new Float64Array(M + 1); let s = 0; for (let n = 1; n <= M; n++) { s += Math.cos(n) / (n * n); a[n] = s; } return a; }, div: 80, note: '这个和的极限没有简单的表达式，柯西准则照样能判断它收敛。' },
+    harm: { gen: () => { const a = new Float64Array(M + 1); let s = 0; for (let n = 1; n <= M; n++) { s += 1 / n; a[n] = s; } return a; }, div: 80 },
+    sqrt: { gen: () => { const a = new Float64Array(M + 1); for (let n = 1; n <= M; n++) a[n] = Math.sin(Math.sqrt(n)); return a; }, div: 300 }
+  };
+  const cache = {};
+  const prep = key => {
+    if (cache[key]) return cache[key];
+    const a = SEQ[key].gen(), hi = new Float64Array(M + 2), lo = new Float64Array(M + 2);
+    hi[M + 1] = -Infinity; lo[M + 1] = Infinity;
+    for (let n = M; n >= 1; n--) { hi[n] = Math.max(hi[n + 1], a[n]); lo[n] = Math.min(lo[n + 1], a[n]); }
+    return (cache[key] = { a, hi, lo });
+  };
+  const sel = $('#c-seq'), eI = $('#c-eps');
+  const P = Plot($('#c-cv'), draw);
+  function draw() {
+    const key = sel.value, { a, hi, lo } = prep(key), e = +eI.value;
+    let N = 0; while (N < M - 1 && !(hi[N + 1] - lo[N + 1] < e)) N++;
+    const div = N > M / 2;
+    const xMax = div ? SEQ[key].div : Math.min(600, Math.max(30, Math.ceil(N * 1.3) + 8));
+    let mn = Infinity, mx = -Infinity; for (let n = 1; n <= xMax; n++) { mn = Math.min(mn, a[n]); mx = Math.max(mx, a[n]); }
+    const pad = 0.08 * (mx - mn) + 0.05;
+    P.v = { x0: 0, x1: xMax + 1, y0: mn - pad, y1: mx + pad };
+    P.size(); P.frame(6, 5);
+    const epsC = tok('--eps'), ok = tok('--ok'), bad = tok('--bad'), mu = tok('--muted'), ink = tok('--ink'), c = P.ctx;
+    const r = xMax > 250 ? 1.8 : xMax > 80 ? 2.6 : 3.4;
+    P.clip();
+    let pair = null;
+    if (!div) {
+      const w0 = lo[N + 1];
+      c.globalAlpha = .14; c.fillStyle = epsC; c.fillRect(P.X(N + .5), P.Y(w0 + e), P.pad.l + P.pw - P.X(N + .5), P.Y(w0) - P.Y(w0 + e)); c.globalAlpha = 1;
+      c.strokeStyle = epsC; c.lineWidth = 1.2; c.setLineDash([5, 4]); c.strokeRect(P.X(N + .5), P.Y(w0 + e), P.pad.l + P.pw - P.X(N + .5) + 4, P.Y(w0) - P.Y(w0 + e)); c.setLineDash([]);
+      if (N > 0) P.vline(N + .5, ink, [3, 3]);
+    } else {
+      const N0 = Math.floor(xMax / 3), n0 = N0 + 1; let best = 0, m0 = n0;
+      for (let m = n0 + 1; m <= xMax; m++) { const d = Math.abs(a[m] - a[n0]); if (d > best) { best = d; m0 = m; } }
+      pair = { N0, n0, m0, d: best };
+      P.vline(N0 + .5, ink, [3, 3]);
+      c.strokeStyle = bad; c.lineWidth = 2; c.beginPath(); c.moveTo(P.X(m0), P.Y(a[n0])); c.lineTo(P.X(m0), P.Y(a[m0])); c.stroke();
+      c.setLineDash([3, 3]); c.lineWidth = 1; c.beginPath(); c.moveTo(P.X(n0), P.Y(a[n0])); c.lineTo(P.X(m0), P.Y(a[n0])); c.stroke(); c.setLineDash([]);
+    }
+    for (let n = 1; n <= xMax; n++) P.dot(n, a[n], r, !div && n > N ? ok : mu);
+    if (pair) { P.dot(pair.n0, a[pair.n0], 5, bad, ink); P.dot(pair.m0, a[pair.m0], 5, bad, ink); }
+    P.unclip();
+    if (!div) { if (N > 0) P.label('N = ' + N, Math.min(P.X(N + .5) + 6, P.pad.l + P.pw - 70), P.pad.t + 10, ink); P.label('高度 ε', P.pad.l + P.pw - 4, P.Y(lo[N + 1] + e) - 11, epsC, 'right'); }
+    else P.label('试 N = ' + pair.N0, Math.min(P.X(pair.N0 + .5) + 6, P.pad.l + P.pw - 90), P.pad.t + 10, ink);
+    $('#c-eps-o').textContent = e.toFixed(2);
+    const adj = Math.abs(a[M] - a[M - 1]);
+    $('#c-read').innerHTML = '<span>ε = <b>' + e.toFixed(2) + '</b></span><span>N = <b>' + (div ? '不存在' : N) + '</b></span>' +
+      (div ? '' : '<span>尾部最高 − 最低 = <b>' + fmt(hi[N + 1] - lo[N + 1]) + '</b></span>') +
+      '<span>相邻差 |a₂₀₀₀₀ − a₁₉₉₉₉| = <b>' + fmt(adj) + '</b></span>';
+    const st = $('#c-status');
+    if (!div) {
+      st.className = 'status ok';
+      st.innerHTML = '<span class="mk">✓</span>取 N = ' + N + '：之后的所有项（检查到第 20000 项）都挤在高度为 ε 的窗口里，任意两项相差不到 ε。' + (SEQ[key].note || '');
+    } else {
+      st.className = 'status bad';
+      st.innerHTML = '<span class="mk">✗</span>试门槛 N = ' + pair.N0 + '：第 ' + pair.n0 + ' 项和第 ' + pair.m0 + ' 项相差 ' + fmt(pair.d) + '，不小于 ε。在前 20000 项里，门槛放在哪里都能找到这样的一对，所以不是柯西数列。注意相邻两项的差已经小到 ' + fmt(adj) + '：相邻差趋于 0 并不够。';
+    }
+  }
+  sel.addEventListener('change', draw); eI.addEventListener('input', draw);
+  draw();
+})();
+
+/* ---------- §4 bisection ---------- */
+(function(){
+  const M = 200000, K = 14;
+  const a = new Float64Array(M + 1); for (let n = 1; n <= M; n++) a[n] = Math.sin(n);
+  let hist, timer = null;
+  const reset = () => { hist = [{ l: -1, r: 1, n: 1 }]; };
+  function step() {
+    if (hist.length > K) return false;
+    const h = hist[hist.length - 1], mid = (h.l + h.r) / 2;
+    let c1 = 0, c2 = 0;
+    for (let n = h.n + 1; n <= M; n++) { const v = a[n]; if (v >= h.l && v <= mid) c1++; else if (v > mid && v <= h.r) c2++; }
+    const left = c1 >= c2, l = left ? h.l : mid, r = left ? mid : h.r;
+    let nk = 0; for (let n = h.n + 1; n <= M; n++) if (a[n] >= l && a[n] <= r) { nk = n; break; }
+    if (!nk) return false;
+    hist.push({ l, r, n: nk, c1, c2, left });
+    return true;
+  }
+  const P = Plot($('#w-cv'), draw);
+  function draw() {
+    P.v = { x0: -1.4, x1: K + 0.6, y0: -1.12, y1: 1.12 };
+    P.size(); P.frame(7, 4);
+    const acc = tok('--accent'), s2 = tok('--s2'), mu = tok('--muted'), ink = tok('--ink'), c = P.ctx;
+    P.clip();
+    c.globalAlpha = .5; c.strokeStyle = mu; c.lineWidth = 1; c.beginPath();
+    for (let n = 1; n <= 500; n++) { const y = P.Y(a[n]); c.moveTo(P.X(-1.2), y); c.lineTo(P.X(-0.55), y); }
+    c.stroke(); c.globalAlpha = 1;
+    hist.forEach((h, j) => {
+      const x0 = P.X(j - 0.2), x1 = P.X(j + 0.2), y0 = P.Y(h.r), y1 = P.Y(h.l);
+      c.globalAlpha = .2; c.fillStyle = acc; c.fillRect(x0, y0, x1 - x0, Math.max(1.5, y1 - y0)); c.globalAlpha = 1;
+      c.strokeStyle = acc; c.lineWidth = 1.4; c.strokeRect(x0, y0, x1 - x0, Math.max(1.5, y1 - y0));
+    });
+    c.strokeStyle = s2; c.lineWidth = 1.2; c.beginPath();
+    hist.forEach((h, j) => { const px = P.X(j), py = P.Y(a[h.n]); j ? c.lineTo(px, py) : c.moveTo(px, py); }); c.stroke();
+    hist.forEach((h, j) => P.dot(j, a[h.n], j === hist.length - 1 ? 5 : 3.6, s2, j === hist.length - 1 ? ink : null));
+    P.unclip();
+    P.label('aₙ 的前 500 项', P.X(-0.88), P.pad.t + 10, mu, 'center');
+    P.label('横轴：二分次数 k', P.pad.l + P.pw - 4, P.pad.t + P.ph - 12, mu, 'right');
+    const h = hist[hist.length - 1], k = hist.length - 1;
+    $('#w-read').innerHTML = '<span>k = <b>' + k + '</b></span><span>区间 = <b>[' + h.l.toFixed(5) + ', ' + h.r.toFixed(5) + ']</b></span><span>长度 = 2/2^k = <b>' + fmt(h.r - h.l) + '</b></span><span style="color:var(--s2)">n_k = <b>' + h.n + '</b>，a(n_k) = <b>' + a[h.n].toFixed(5) + '</b></span>';
+    const st = $('#w-status');
+    const list = hist.map(x => x.n).join(', ');
+    if (k === 0) { st.className = 'status'; st.innerHTML = '起点：区间 [−1, 1] 包含所有项，子列第一项取 n₀ = 1。点“二分一次”。'; }
+    else {
+      st.className = 'status ok';
+      st.innerHTML = '<span class="mk">✓</span>第 ' + k + ' 次：只数下标 &gt; ' + hist[k - 1].n + ' 的项，左半有 ' + h.c1 + ' 项，右半有 ' + h.c2 + ' 项，留下' + (h.left ? '左' : '右') + '半。再从中取下标最小的一项。子列下标：' + list + '。' + (k === K ? ' 区间长度已经只有 ' + fmt(h.r - h.l) + '，子列的项被越夹越紧。' : '');
+    }
+  }
+  const stopAuto = () => { if (timer) { clearInterval(timer); timer = null; } };
+  $('#w-step').addEventListener('click', () => { stopAuto(); step(); draw(); });
+  $('#w-reset').addEventListener('click', () => { stopAuto(); reset(); draw(); });
+  $('#w-auto').addEventListener('click', () => {
+    stopAuto();
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { while (step()); draw(); return; }
+    timer = setInterval(() => { if (!step()) stopAuto(); draw(); }, 420);
+  });
+  reset(); draw();
+})();
+
+stepper('steps-m'); stepper('steps-e'); stepper('steps-w');
+
+buildQuiz([
+  { q: '单调有界定理在有理数集里成立吗？', o: ['成立，证明里没用到无理数', '不成立：1, 1.4, 1.41, 1.414, … 是单调有界的有理数列，极限 √2 不是有理数', '只对递减数列成立', '只对整数数列成立'], a: 1,
+    e: '证明的第一步要用确界原理取 β = sup aₙ，而有理数集没有确界原理。这个例子的上确界在有理数里不存在。' },
+  { q: '若 |aₙ₊₁ − aₙ| → 0，则 aₙ 一定收敛吗？', o: ['一定收敛', '不一定，例如调和数列 Hₙ 或 √n', '只有单调时一定收敛', '一定发散'], a: 1,
+    e: '柯西准则要求任意两项（不只是相邻两项）都接近。Hₙ 的相邻差 1/(n + 1) → 0，但 H₂ₙ − Hₙ ≥ 1/2。B 正确。C 也不对：Hₙ 就是单调的。' },
+  { q: '下列哪个是柯西数列？', o: ['aₙ = 1 + 1/2² + … + 1/n²', 'aₙ = 1 + 1/2 + … + 1/n', 'aₙ = (−1)ⁿ', 'aₙ = ln n'], a: 0,
+    e: '在实数里柯西数列就是收敛数列。A 收敛（练习 2）。B、D 都发散到无穷，C 在 ±1 之间跳。' },
+  { q: '已知 {aₙ} 有界，下列哪个一定成立？', o: ['aₙ 收敛', 'aₙ 有收敛的子列', 'aₙ 的所有子列都收敛', 'aₙ 单调'], a: 1,
+    e: '这就是致密性定理。(−1)ⁿ 有界但不收敛，所以 A 不对；它的奇数项子列和偶数项子列都收敛，但子列 1, −1, 1, −1, … 本身不收敛，所以 C 也不对。' },
+  { q: 'vₙ = (1 + 1/n)ⁿ⁺¹ 的单调性和极限是？', o: ['递减，趋于 e', '递增，趋于 e', '递减，趋于 1', '发散'], a: 0,
+    e: 'vₙ = uₙ(1 + 1/n)，极限是 e · 1 = e。实验 2 里能看到它从 4 往下走，始终在 e 的上方。' }
+]);
+progress('ch3-progress', ['s1', 's2', 's3', 's4', 's5']);
+
+})();
+</script>
+</body>
+</html>

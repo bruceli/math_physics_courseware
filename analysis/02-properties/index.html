@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>极限的性质与运算</title>
+<meta name="description" content="数学分析第二章自学课件：唯一性、有界性、保号性、四则运算、夹逼准则与 sin x / x。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+html,body{margin:0}[hidden]{display:none!important}
+
+/* Layout: a single reading column (42em) inside a 1040px frame; interactive labs break out to the full frame width. ε is always orange, δ always blue, green = satisfies, red = violates. */
+:root{
+  --bg:#f4f5f8; --surface:#ffffff; --sunk:#eef0f4; --ink:#171d29; --muted:#566074; --rule:#dce0e8; --rule-strong:#c3c9d4; --grid:#e9ecf1;
+  --accent:#36409a; --on-accent:#ffffff;
+  --eps:#c9601a; --eps-soft:rgba(201,96,26,.13);
+  --delta:#2470ad; --delta-soft:rgba(36,112,173,.13);
+  --ok:#22804e; --bad:#c23a33; --s2:#a3317a;
+  --f-display:"Noto Serif SC","Songti SC","STSong",serif;
+  --f-body:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10131a; --surface:#171b24; --sunk:#131720; --ink:#e3e7ee; --muted:#98a1b2; --rule:#272d39; --rule-strong:#384050; --grid:#1d222c;
+  --accent:#9ba4ff; --on-accent:#10131a;
+  --eps:#f0914a; --eps-soft:rgba(240,145,74,.17);
+  --delta:#5ba7e4; --delta-soft:rgba(91,167,228,.17);
+  --ok:#4cc083; --bad:#ef6a60; --s2:#e07ab9; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10131a; --surface:#171b24; --sunk:#131720; --ink:#e3e7ee; --muted:#98a1b2; --rule:#272d39; --rule-strong:#384050; --grid:#1d222c;
+  --accent:#9ba4ff; --on-accent:#10131a;
+  --eps:#f0914a; --eps-soft:rgba(240,145,74,.17);
+  --delta:#5ba7e4; --delta-soft:rgba(91,167,228,.17);
+  --ok:#4cc083; --bad:#ef6a60; --s2:#e07ab9; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.85}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.gutter{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.topbar .gutter{display:flex;align-items:center;gap:16px;padding-block:10px}
+.topbar .name{font-family:var(--f-display);font-weight:700;font-size:16px;white-space:nowrap}
+.topbar nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.topbar nav a{font-family:var(--f-mono);font-size:13px;color:var(--muted);text-decoration:none;padding:2px 8px;border-radius:6px;white-space:nowrap}
+.topbar nav a:hover{color:var(--ink);background:var(--sunk)}
+.topbar nav a.done{color:var(--ok)}
+.prog{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.prog .bar{width:72px;height:4px;background:var(--rule);border-radius:2px;overflow:hidden}
+.prog .bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+@media (max-width:640px){.topbar nav{display:none}.topbar .gutter{justify-content:space-between}}
+.prose{max-width:42em}
+.prose p{margin:0 0 1em}
+a{color:var(--accent)}
+.hero{padding-block:56px 40px}
+.eyebrow{font-family:var(--f-mono);font-size:13px;letter-spacing:.06em;color:var(--muted);margin:0 0 14px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,6.4vw,58px);line-height:1.15;margin:0 0 20px;text-wrap:balance}
+h1 .e{color:var(--eps)} h1 .d{color:var(--delta)}
+.lede{font-size:18px;color:var(--ink);max-width:36em}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin:28px 0 8px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:22px;height:12px;border-radius:3px;display:inline-block}
+.toc{list-style:none;padding:0;margin:32px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:0 32px;border-top:1px solid var(--rule)}
+.toc li{border-bottom:1px solid var(--rule)}
+.toc a{display:grid;grid-template-columns:3.2em 1fr auto;gap:8px;padding:10px 0;text-decoration:none;color:var(--ink);align-items:baseline}
+.toc a:hover .t{color:var(--accent)}
+.toc .n,.toc .m{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.toc li.done .n{color:var(--ok)}
+section.lesson{padding-block:56px 36px;border-top:1px solid var(--rule)}
+.secno{font-family:var(--f-mono);font-size:13px;color:var(--muted);letter-spacing:.06em}
+h2{font-family:var(--f-display);font-weight:700;font-size:clamp(25px,3.4vw,31px);line-height:1.3;margin:4px 0 18px;text-wrap:balance}
+h3{font-size:17px;font-weight:700;margin:32px 0 8px}
+.def{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:14px 20px 16px;margin:22px 0;max-width:46em}
+.def .tag{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+.def .tex{overflow-x:auto;overflow-y:hidden}
+.def .read{font-size:15px;color:var(--muted);margin:6px 0 0}
+.lab{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:18px 18px 16px;margin:28px 0}
+.lab-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px;margin-bottom:12px}
+.lab-h b{font-size:15px}
+.lab-h small{font-size:13px;color:var(--muted)}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 24px;align-items:end}
+.ctl{min-width:0}
+.ctl label{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--muted);line-height:1.5;margin-bottom:4px}
+.ctl output{font-family:var(--f-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;margin:6px 0;accent-color:var(--accent)}
+input.r-eps{accent-color:var(--eps)} input.r-del{accent-color:var(--delta)}
+select,input[type=text]{font:inherit;font-size:15px;width:100%;padding:7px 10px;border-radius:8px;border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;font-size:14px;line-height:1.4;padding:7px 14px;border-radius:8px;border:1px solid var(--rule-strong);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+canvas.plot{display:block;width:100%;height:340px;margin-top:14px}
+@media (max-width:600px){canvas.plot{height:270px}}
+.readouts{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;font-family:var(--f-mono);font-size:14px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.readouts b{color:var(--ink);font-weight:500}
+.status{margin-top:10px;padding:10px 14px;border:1px solid var(--rule);border-radius:8px;background:var(--sunk);font-size:15px;line-height:1.7}
+.status.ok{border-color:var(--ok)} .status.bad{border-color:var(--bad)}
+.status .mk{font-weight:700;margin-right:4px}
+.status.ok .mk{color:var(--ok)} .status.bad .mk{color:var(--bad)}
+.obs{padding-left:1.2em;margin:0}
+.obs li{margin-bottom:8px}
+.ce{color:var(--eps);font-weight:500} .cd{color:var(--delta);font-weight:500}
+.steps{display:grid;gap:10px;margin:18px 0;max-width:46em}
+.step{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px}
+.step .k{font-family:var(--f-mono);font-size:12px;color:var(--muted);letter-spacing:.06em}
+.step .tex{overflow-x:auto;overflow-y:hidden}
+.step.final{border-color:var(--accent)}
+.note{font-size:15px;color:var(--muted);border-top:1px dashed var(--rule-strong);padding-top:10px;margin-top:18px;max-width:42em}
+.game{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.game .row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.game .row input{width:9em}
+.chal{font-family:var(--f-mono);font-size:22px;color:var(--eps)}
+.err{font-size:13px;color:var(--bad);min-height:1.2em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px;perspective:600px}
+.chip{font-family:var(--f-mono);font-size:16px;padding:8px 14px;border-radius:8px;border:1px solid var(--rule-strong);background:var(--sunk);transition:transform .16s ease,background .2s,color .2s,border-color .2s}
+.chip.q{color:var(--accent)}
+.chip.changed{border-color:var(--bad);color:var(--bad)}
+.chip.flip{transform:rotateX(90deg)}
+.cmp{width:100%;border-collapse:collapse;font-size:15px;margin:14px 0}
+.cmp-wrap{overflow-x:auto;max-width:46em}
+.cmp th,.cmp td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+.cmp th{font-weight:500;color:var(--muted);font-size:13px}
+.quiz{display:grid;gap:14px;margin:18px 0;max-width:46em}
+.q{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:14px 18px;margin:0}
+.q legend{font-weight:500;padding:0;margin-bottom:8px;float:left;width:100%}
+.q .opts{clear:both;display:grid;gap:6px}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:6px;cursor:pointer;line-height:1.6}
+.q label:hover{background:var(--sunk)}
+.q input{margin-top:5px;accent-color:var(--accent)}
+.q label.right{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.q label.wrong{background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.q .fb{font-size:15px;margin-top:8px;line-height:1.7}
+.q .fb b.y{color:var(--ok)} .q .fb b.n{color:var(--bad)}
+.score{font-family:var(--f-mono);font-size:14px;color:var(--muted)}
+details.ex{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px;max-width:46em;margin:0 0 10px}
+details.ex summary{cursor:pointer;font-weight:500}
+details.ex .tex{overflow-x:auto;overflow-y:hidden}
+.ex-q{margin:12px 0 6px;max-width:46em}
+.donebar{display:flex;align-items:center;gap:12px;margin-top:28px;font-size:14px;color:var(--muted)}
+.donebar button[aria-pressed="true"]{border-color:var(--ok);color:var(--ok)}
+footer{padding-block:40px 64px;border-top:1px solid var(--rule);color:var(--muted);font-size:14px}
+mjx-container[display="true"]{margin:.6em 0!important}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important}}
+.topbar .home{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;border:1px solid var(--rule);border-radius:6px;padding:1px 8px}
+.topbar .home:hover{color:var(--ink);border-color:var(--rule-strong)}
+.topbar .name{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.nextch{display:block;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px;max-width:46em;margin-bottom:14px;font-size:17px}
+.nextch:hover{border-color:var(--accent)}
+.nextch small{display:block;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.def.tex{overflow-x:auto;overflow-y:hidden}
+.steps{grid-template-columns:minmax(0,1fr)}.step,.q,.lab,.def{min-width:0}
+.prose p,.ex-q,details.ex p,.def p,.step p{overflow-wrap:anywhere}
+.topbar .home{font-size:13px;color:var(--muted);text-decoration:none;white-space:nowrap;border:1px solid var(--rule);border-radius:6px;padding:1px 8px}
+.topbar .home:hover{color:var(--ink);border-color:var(--rule-strong)}
+.topbar .name{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.nextch{display:block;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 18px;max-width:46em;margin-bottom:14px;font-size:17px}
+.nextch:hover{border-color:var(--accent)}
+.nextch small{display:block;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.def.tex{overflow-x:auto;overflow-y:hidden}
+.steps{grid-template-columns:minmax(0,1fr)}.step,.q,.lab,.def{min-width:0}
+.prose p,.ex-q,details.ex p,.def p,.step p{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="gutter">
+    <a class="home" href="/">目录</a>
+    <span class="name">极限的性质与运算</span>
+    <nav id="topnav" aria-label="章节">
+      <a href="#s1">§1</a><a href="#s2">§2</a><a href="#s3">§3</a><a href="#s4">§4</a><a href="#s5">§5</a>
+    </nav>
+    <div class="prog"><span id="prog-txt">已掌握 0 / 5</span><span class="bar"><i id="prog-bar"></i></span></div>
+  </div>
+</header>
+
+<main>
+<div class="gutter hero">
+  <p class="eyebrow">数学分析 · 第二章 · 自学课件</p>
+  <h1>极限的性质与运算</h1>
+  <p class="lede">第一章学会了用 ε 语言判断一个数是不是极限。这一章用同样的语言推出极限的一般性质：极限只有一个、收敛数列有界、极限能保持正负号、极限可以做四则运算，以及最常用的求极限工具夹逼准则。最后用它算出第一个重要极限 sin x / x → 1。</p>
+  <div class="legend" aria-label="图例">
+    <span><i class="sw" style="background:var(--eps-soft);border:1.5px solid var(--eps)"></i>ε 误差带</span>
+    <span><i class="sw" style="background:var(--ok)"></i>满足条件</span>
+    <span><i class="sw" style="background:var(--bad)"></i>违反条件</span>
+    <span><i class="sw" style="background:var(--accent)"></i>证明里取的辅助量</span>
+  </div>
+  <ol class="toc" id="toc">
+    <li data-s="s1"><a href="#s1"><span class="n">§1</span><span class="t">唯一性</span><span class="m">10 分钟</span></a></li>
+    <li data-s="s2"><a href="#s2"><span class="n">§2</span><span class="t">有界性与保号性</span><span class="m">15 分钟</span></a></li>
+    <li data-s="s3"><a href="#s3"><span class="n">§3</span><span class="t">四则运算法则</span><span class="m">15 分钟</span></a></li>
+    <li data-s="s4"><a href="#s4"><span class="n">§4</span><span class="t">夹逼准则与 sin x / x</span><span class="m">20 分钟</span></a></li>
+    <li data-s="s5"><a href="#s5"><span class="n">§5</span><span class="t">自测与练习</span><span class="m">20 分钟</span></a></li>
+  </ol>
+  <p class="note">本章会反复用到第一章的定义 1.1 和“把 &lt; ε 换成 &lt; Cε 也行”这一条。忘了的话，先回<a href="/analysis/01-limits/#s3">第一章 §3</a> 看一眼。</p>
+</div>
+
+<!-- §1 -->
+<section class="lesson gutter" id="s1">
+  <div class="secno">§1</div>
+  <h2>唯一性：一个数列不能趋于两个数</h2>
+  <div class="prose">
+    <p>直觉上显然：数列的尾巴不可能同时挤在两个不同的地方。证明的关键是选对 ε，让两条误差带分开。</p>
+  </div>
+  <div class="def">
+    <div class="tag">定理 2.1（唯一性）</div>
+    <p style="margin:4px 0 0">若 \(\lim a_n = A\) 且 \(\lim a_n = B\)，则 \(A=B\)。</p>
+  </div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 1 · 两条带子</b><small>aₙ = 1 + (−1)ⁿ/√n，真正的极限 A = 1；B 是冒充者</small></div>
+    <div class="controls">
+      <div class="ctl"><label for="u-eps"><span>误差 <span class="ce">ε</span></span><output id="u-eps-o">0.30</output></label>
+        <input type="range" class="r-eps" id="u-eps" min="0.02" max="0.6" step="0.01" value="0.3"></div>
+      <div class="ctl"><label for="u-B"><span>冒充的极限 <span style="color:var(--s2);font-weight:500">B</span></span><output id="u-B-o">1.50</output></label>
+        <input type="range" id="u-B" min="0" max="2" step="0.01" value="1.5"></div>
+    </div>
+    <canvas class="plot" id="u-cv" aria-label="数列散点图，叠加以 A 和 B 为中心的两条误差带"></canvas>
+    <div class="readouts"><span>ε = <b id="u-r-eps">0.30</b></span><span>|A − B|/2 = <b id="u-r-half">0.25</b></span><span>A 的门槛 N = <b id="u-r-NA">0</b></span><span style="color:var(--s2)">B 的门槛 N = <b id="u-r-NB">0</b></span></div>
+    <div class="status" id="u-status"></div>
+  </div>
+  <div class="steps" id="steps-u">
+    <div class="step"><div class="k">第 1 步 · 反设并选 ε</div>
+      <p>假设 \(A\ne B\)。取 \(\varepsilon=\dfrac{|A-B|}{2}>0\)，这正是让两条带刚好不相交的宽度。</p></div>
+    <div class="step" hidden><div class="k">第 2 步 · 两个门槛</div>
+      <p>由 \(a_n\to A\)，存在 \(N_1\)，当 \(n>N_1\) 时 \(|a_n-A|\lt\varepsilon\)；由 \(a_n\to B\)，存在 \(N_2\)，当 \(n>N_2\) 时 \(|a_n-B|\lt\varepsilon\)。</p></div>
+    <div class="step final" hidden><div class="k">第 3 步 · 推出矛盾</div>
+      <p>取 \(n>\max\{N_1,N_2\}\)，两式同时成立，于是</p>
+      <div class="tex">\[|A-B|\le|a_n-A|+|a_n-B|\lt 2\varepsilon=|A-B|,\]</div>
+      <p>矛盾。所以 \(A=B\)。∎</p></div>
+  </div>
+  <div class="btns"><button id="steps-u-next" class="primary">下一步</button><button id="steps-u-all">全部展开</button></div>
+  <p class="note">“取 max{N₁, N₂}”是处理两个条件同时成立的标准动作，本章后面会一直用。</p>
+  <div class="donebar"><button data-done="s1" aria-pressed="false">标记为已掌握</button><span>下一节：收敛数列长什么样</span></div>
+</section>
+
+<!-- §2 -->
+<section class="lesson gutter" id="s2">
+  <div class="secno">§2</div>
+  <h2>有界性与保号性</h2>
+  <div class="prose">
+    <p>这两条性质的证明套路相同：先对一个特别选取的 ε 用定义，管住门槛之后的无穷多项；门槛之前只剩有限项，单独处理。</p>
+  </div>
+  <div class="def">
+    <div class="tag">定理 2.2（有界性）</div>
+    <p style="margin:4px 0 0">收敛数列必有界：若 \(a_n\to A\)，则存在 \(M>0\)，对所有 n 有 \(|a_n|\le M\)。</p>
+  </div>
+  <div class="def">
+    <div class="tag">定理 2.3（保号性）</div>
+    <p style="margin:4px 0 0">若 \(a_n\to A>0\)，则存在 N，当 \(n>N\) 时 \(a_n>\dfrac A2>0\)。A &lt; 0 的情形同理。</p>
+  </div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 2 · 管住尾巴，再收拾有限项</b><small>切换上方的性质，看证明里的 ε 怎么取</small></div>
+    <div class="controls">
+      <div class="ctl"><label>要演示的性质</label>
+        <div class="btns" id="b-mode" role="group" aria-label="选择性质"><button class="primary" data-v="bound" aria-pressed="true">有界性</button><button data-v="sign" aria-pressed="false">保号性</button></div></div>
+      <div class="ctl"><label for="b-seq">数列</label>
+        <select id="b-seq">
+          <option value="s1">aₙ = 2 + 6·(−1)ⁿ/n，极限 2</option>
+          <option value="s2">aₙ = (n − 12)/(n + 2)，极限 1</option>
+          <option value="s3">aₙ = 1.5 − 8/n + 10/n²，极限 1.5</option>
+        </select></div>
+    </div>
+    <canvas class="plot" id="b-cv" aria-label="数列散点图，演示有界性或保号性的证明"></canvas>
+    <div class="readouts" id="b-read"></div>
+    <div class="status" id="b-status"></div>
+  </div>
+  <h3>证明</h3>
+  <div class="prose">
+    <p><b>有界性</b>　对 ε = 1 用定义：存在 N，当 n &gt; N 时 |aₙ − A| &lt; 1，从而 \(|a_n|\lt|A|+1\)。门槛之前只有 \(a_1,\dots,a_N\) 这有限项。取 \(M=\max\{|a_1|,\dots,|a_N|,|A|+1\}\)，所有项都满足 \(|a_n|\le M\)。∎</p>
+    <p><b>保号性</b>　对 ε = A/2 用定义：存在 N，当 n &gt; N 时 \(|a_n-A|\lt\dfrac A2\)，于是 \(a_n\gt A-\dfrac A2=\dfrac A2\gt0\)。∎</p>
+  </div>
+  <h3>推论：保不等式</h3>
+  <div class="prose">
+    <p>若 \(a_n\to A\)，\(b_n\to B\)，且从某项起 \(a_n\le b_n\)，则 \(A\le B\)。证明：若 A &gt; B，对 \(b_n-a_n\to B-A\lt0\) 用保号性，从某项起 \(b_n\lt a_n\)，矛盾。</p>
+    <p>注意严格不等号不能保持：\(\dfrac1n\gt0\) 对每个 n 成立，但极限是 0。取极限时，&lt; 要放宽成 ≤。</p>
+  </div>
+  <div class="donebar"><button data-done="s2" aria-pressed="false">标记为已掌握</button><span>下一节：极限能做加减乘除</span></div>
+</section>
+
+<!-- §3 -->
+<section class="lesson gutter" id="s3">
+  <div class="secno">§3</div>
+  <h2>四则运算法则</h2>
+  <div class="def">
+    <div class="tag">定理 2.4（四则运算）</div>
+    <p style="margin:4px 0 6px">若 \(a_n\to A\)，\(b_n\to B\)，则</p>
+    <div class="tex">\[a_n\pm b_n\to A\pm B,\qquad a_nb_n\to AB,\qquad \frac{a_n}{b_n}\to\frac AB\ \ (B\ne0).\]</div>
+  </div>
+  <div class="prose">
+    <p>加减法几乎直接由三角不等式得到。乘法要多想一步：\(a_nb_n\) 和 \(AB\) 差多少？把乘积看成长方形面积，差就看得见了。</p>
+  </div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 3 · 乘积的误差是三块面积</b><small>a = A + Δa，b = B + Δb（为了画图只画 Δ ≥ 0 的情形）</small></div>
+    <div class="controls">
+      <div class="ctl"><label for="r-A"><span>A</span><output id="r-A-o">2</output></label><input type="range" id="r-A" min="0.5" max="2.5" step="0.05" value="2"></div>
+      <div class="ctl"><label for="r-B"><span>B</span><output id="r-B-o">1.5</output></label><input type="range" id="r-B" min="0.5" max="2.5" step="0.05" value="1.5"></div>
+      <div class="ctl"><label for="r-da"><span>Δa = a − A</span><output id="r-da-o">0.5</output></label><input type="range" id="r-da" min="0" max="1" step="0.01" value="0.5"></div>
+      <div class="ctl"><label for="r-db"><span>Δb = b − B</span><output id="r-db-o">0.4</output></label><input type="range" id="r-db" min="0" max="1" step="0.01" value="0.4"></div>
+    </div>
+    <div class="btns" style="margin-top:12px"><button id="r-play" class="primary">播放：Δa、Δb → 0</button></div>
+    <canvas class="plot" id="r-cv" aria-label="长方形面积图：AB 加上三块误差面积"></canvas>
+    <div class="readouts" id="r-read"></div>
+    <div class="status" id="r-status"></div>
+  </div>
+  <div class="prose"><p>图上的等式就是 \(ab-AB=A\,\Delta b+B\,\Delta a+\Delta a\,\Delta b\)。证明时更方便的写法是把它并成两项。</p></div>
+  <div class="steps" id="steps-r">
+    <div class="step"><div class="k">第 1 步 · 拆成两项</div>
+      <div class="tex">\[a_nb_n-AB=a_n(b_n-B)+B(a_n-A)\]</div></div>
+    <div class="step" hidden><div class="k">第 2 步 · 用有界性管住 aₙ</div>
+      <p>第一项里的 \(a_n\) 会变。但 \(a_n\) 收敛，由定理 2.2 存在 M，使 \(|a_n|\le M\) 对所有 n 成立。于是</p>
+      <div class="tex">\[|a_nb_n-AB|\le M\,|b_n-B|+|B|\,|a_n-A|.\]</div></div>
+    <div class="step final" hidden><div class="k">第 3 步 · 取两个门槛的最大值</div>
+      <p>任给 ε &gt; 0，存在 \(N_1\)、\(N_2\) 分别使 \(|a_n-A|\lt\varepsilon\)、\(|b_n-B|\lt\varepsilon\)。当 \(n>\max\{N_1,N_2\}\) 时</p>
+      <div class="tex">\[|a_nb_n-AB|\lt (M+|B|)\,\varepsilon.\]</div>
+      <p>右边是 ε 的常数倍，由第一章 §3 的等价说法，\(a_nb_n\to AB\)。∎</p></div>
+  </div>
+  <div class="btns"><button id="steps-r-next" class="primary">下一步</button><button id="steps-r-all">全部展开</button></div>
+  <p class="note">除法的关键是分母不能离 0 太近：由保号性的推广，B ≠ 0 时从某项起 |bₙ| &gt; |B|/2。这一步留作练习 2。</p>
+  <div class="donebar"><button data-done="s3" aria-pressed="false">标记为已掌握</button><span>下一节：夹逼准则</span></div>
+</section>
+
+<!-- §4 -->
+<section class="lesson gutter" id="s4">
+  <div class="secno">§4</div>
+  <h2>夹逼准则与 sin x / x</h2>
+  <div class="def">
+    <div class="tag">定理 2.5（夹逼准则）</div>
+    <p style="margin:4px 0 0">若从某项起 \(a_n\le c_n\le b_n\)，且 \(a_n\to L\)，\(b_n\to L\)，则 \(c_n\to L\)。函数极限同理。</p>
+    <p class="read">证明：任给 ε，取门槛的最大值，使 \(L-\varepsilon\lt a_n\) 和 \(b_n\lt L+\varepsilon\) 同时成立，于是 \(L-\varepsilon\lt a_n\le c_n\le b_n\lt L+\varepsilon\)。</p>
+  </div>
+  <div class="prose">
+    <p>夹逼准则的价值在于：c 本身难算，但能找到两个容易算、而且极限相同的界。最经典的例子是 \(\dfrac{\sin x}{x}\)。第一章实验 4 里你已经看到它在 0 附近趋于 1，现在来证明它。</p>
+  </div>
+  <div class="lab">
+    <div class="lab-h"><b>实验 4 · 单位圆里的三块面积</b><small>拖动角 x（弧度），左图比较面积，右图看夹逼</small></div>
+    <div class="controls">
+      <div class="ctl"><label for="s-x"><span>角 x</span><output id="s-x-o">0.9</output></label><input type="range" id="s-x" min="0.05" max="1.4" step="0.01" value="0.9"></div>
+      <div class="ctl btns"><button id="s-play" class="primary">播放：x → 0</button></div>
+    </div>
+    <div class="two">
+      <canvas class="plot" id="s-cv1" aria-label="单位圆：三角形 OAP、扇形 OAP、三角形 OAT"></canvas>
+      <canvas class="plot" id="s-cv2" aria-label="cos x、sin x / x、1 三条曲线"></canvas>
+    </div>
+    <div class="readouts" id="s-read"></div>
+  </div>
+  <div class="steps" id="steps-s">
+    <div class="step"><div class="k">第 1 步 · 比较面积</div>
+      <p>设 \(0\lt x\lt\dfrac\pi2\)。单位圆中，三角形 OAP ⊂ 扇形 OAP ⊂ 三角形 OAT，面积依次为</p>
+      <div class="tex">\[\frac{\sin x}{2}\lt\frac{x}{2}\lt\frac{\tan x}{2}.\]</div></div>
+    <div class="step" hidden><div class="k">第 2 步 · 变形成夹逼的样子</div>
+      <p>各项乘 \(\dfrac{2}{\sin x}\gt0\) 再取倒数（不等号反向）：</p>
+      <div class="tex">\[\cos x\lt\frac{\sin x}{x}\lt1.\]</div>
+      <p>三个函数都是偶函数，所以 \(-\dfrac\pi2\lt x\lt0\) 时同样成立。</p></div>
+    <div class="step" hidden><div class="k">第 3 步 · 下界趋于 1</div>
+      <p>还要说明 \(\cos x\to1\)。由 \(0\le1-\cos x=2\sin^2\dfrac x2\le2\left(\dfrac x2\right)^2=\dfrac{x^2}{2}\)，再用一次夹逼即得。这里用到了第 1 步的 \(|\sin t|\le|t|\)。</p></div>
+    <div class="step final" hidden><div class="k">第 4 步 · 结论</div>
+      <p>两边的界都趋于 1，由夹逼准则</p>
+      <div class="tex">\[\lim_{x\to0}\frac{\sin x}{x}=1.\ \ ∎\]</div></div>
+  </div>
+  <div class="btns"><button id="steps-s-next" class="primary">下一步</button><button id="steps-s-all">全部展开</button></div>
+  <p class="note">数列也常用夹逼。例如 \(-\dfrac1n\le\dfrac{\sin n}{n}\le\dfrac1n\)，两边都趋于 0，所以 \(\dfrac{\sin n}{n}\to0\)。</p>
+  <div class="donebar"><button data-done="s4" aria-pressed="false">标记为已掌握</button><span>下一节：检验一下</span></div>
+</section>
+
+<!-- §5 -->
+<section class="lesson gutter" id="s5">
+  <div class="secno">§5</div>
+  <h2>自测与练习</h2>
+  <p class="prose">五道选择题检查概念，四道练习题需要动笔。</p>
+  <div class="score" id="quiz-score">已答对 0 / 5</div>
+  <div class="quiz" id="quiz"></div>
+
+  <h3>练习题</h3>
+  <p class="ex-q"><b>练习 1</b>　证明 \(\displaystyle\lim_{n\to\infty}\sqrt[n]{n}=1\)。</p>
+  <details class="ex"><summary>提示</summary><p>设 \(\sqrt[n]{n}=1+h_n\)，\(h_n\ge0\)。用二项式展开只保留一项，得到 h_n 的上界，再夹逼。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <p>n ≥ 2 时，\(n=(1+h_n)^n\ge\dfrac{n(n-1)}{2}h_n^2\)，所以 \(0\le h_n\le\sqrt{\dfrac{2}{n-1}}\)。右边趋于 0，由夹逼 \(h_n\to0\)，即 \(\sqrt[n]{n}\to1\)。∎</p></details>
+
+  <p class="ex-q"><b>练习 2</b>　证明商的法则：若 \(a_n\to A\)，\(b_n\to B\ne0\)，则 \(\dfrac{a_n}{b_n}\to\dfrac AB\)。</p>
+  <details class="ex"><summary>提示</summary><p>先证 \(\dfrac{1}{b_n}\to\dfrac1B\)，再用乘法法则。对 ε = |B|/2 用定义，得到从某项起 |bₙ| &gt; |B|/2。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <p>存在 \(N_0\)，n &gt; N₀ 时 \(|b_n-B|\lt\dfrac{|B|}2\)，从而 \(|b_n|\gt\dfrac{|B|}2\)。于是</p>
+    <div class="tex">\[\left|\frac1{b_n}-\frac1B\right|=\frac{|b_n-B|}{|b_n|\,|B|}\le\frac{2}{|B|^2}\,|b_n-B|.\]</div>
+    <p>右边是 \(|b_n-B|\) 的常数倍，故 \(\dfrac1{b_n}\to\dfrac1B\)。再由乘法法则，\(\dfrac{a_n}{b_n}=a_n\cdot\dfrac1{b_n}\to\dfrac AB\)。∎</p></details>
+
+  <p class="ex-q"><b>练习 3</b>　求 \(\displaystyle\lim_{n\to\infty}\sqrt n\left(\sqrt{n+1}-\sqrt n\right)\)。</p>
+  <details class="ex"><summary>提示</summary><p>分子有理化，再分子分母同除以 √n。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <div class="tex">\[\sqrt n\left(\sqrt{n+1}-\sqrt n\right)=\frac{\sqrt n}{\sqrt{n+1}+\sqrt n}=\frac{1}{\sqrt{1+\frac1n}+1}\to\frac12.\]</div>
+    <p>最后一步用到四则运算法则和 \(\sqrt{1+\frac1n}\to1\)。</p></details>
+
+  <p class="ex-q"><b>练习 4</b>　求 \(\displaystyle\lim_{x\to0}\frac{1-\cos x}{x^2}\)。</p>
+  <details class="ex"><summary>提示</summary><p>用半角公式把 1 − cos x 化成 sin²，凑出 sin t / t。</p></details>
+  <details class="ex"><summary>参考答案</summary>
+    <div class="tex">\[\frac{1-\cos x}{x^2}=\frac{2\sin^2\frac x2}{x^2}=\frac12\left(\frac{\sin\frac x2}{\frac x2}\right)^2\to\frac12.\]</div></details>
+  <div class="donebar"><button data-done="s5" aria-pressed="false">标记为已掌握</button><span>本章完</span></div>
+</section>
+</main>
+
+<footer class="gutter">
+  <a class="nextch" href="/analysis/03-criteria/"><small>下一章 · 第三章</small>收敛准则：单调有界与柯西 →</a>
+  <p>本章的方法都需要先猜出极限。下一章讨论不知道极限是多少时，怎样判断数列收敛。</p>
+</footer>
+
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code','select','option','canvas'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" async></script>
+<script>
+(function(){
+'use strict';
+const $ = s => document.querySelector(s);
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const MONO = '12px "JetBrains Mono", ui-monospace, monospace';
+const redraws = [];
+const redrawAll = () => redraws.forEach(f => f());
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', redrawAll); } catch (e) {}
+new MutationObserver(redrawAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(redrawAll);
+
+function trim(v, d) { const s = (+v).toFixed(d); return s.includes('.') ? s.replace(/0+$/, '').replace(/\.$/, '') : s; }
+function fmt(v) {
+  if (v === 0) return '0';
+  const a = Math.abs(v);
+  if (a >= 100) return trim(v, 1);
+  if (a >= 1) return trim(v, 3);
+  if (a >= 0.001) return trim(v, 4);
+  return v.toExponential(2);
+}
+function niceTicks(a, b, count) {
+  const step0 = (b - a) / count, mag = Math.pow(10, Math.floor(Math.log10(step0))), r = step0 / mag;
+  const step = (r >= 7.5 ? 10 : r >= 3.5 ? 5 : r >= 1.5 ? 2 : 1) * mag;
+  const out = [];
+  for (let t = Math.ceil(a / step) * step; t <= b + step * 1e-6; t += step) out.push(Math.abs(t) < step * 1e-6 ? 0 : t);
+  const dec = Math.max(0, -Math.floor(Math.log10(step) + 1e-9));
+  return { ticks: out, dec };
+}
+function Plot(canvas, draw) {
+  const ctx = canvas.getContext('2d');
+  const p = { ctx, pad: { l: 46, r: 14, t: 14, b: 30 }, v: { x0: 0, x1: 1, y0: 0, y1: 1 } };
+  p.size = () => {
+    const dpr = window.devicePixelRatio || 1, W = canvas.clientWidth, H = canvas.clientHeight;
+    if (canvas.width !== Math.round(W * dpr) || canvas.height !== Math.round(H * dpr)) { canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); p.W = W; p.H = H;
+    p.pw = W - p.pad.l - p.pad.r; p.ph = H - p.pad.t - p.pad.b;
+  };
+  p.X = x => p.pad.l + (x - p.v.x0) / (p.v.x1 - p.v.x0) * p.pw;
+  p.Y = y => p.pad.t + (p.v.y1 - y) / (p.v.y1 - p.v.y0) * p.ph;
+  p.frame = (xc, yc) => {
+    const tx = niceTicks(p.v.x0, p.v.x1, xc || 6), ty = niceTicks(p.v.y0, p.v.y1, yc || 5);
+    ctx.lineWidth = 1; ctx.strokeStyle = tok('--grid');
+    ctx.beginPath();
+    tx.ticks.forEach(t => { const x = Math.round(p.X(t)) + .5; ctx.moveTo(x, p.pad.t); ctx.lineTo(x, p.pad.t + p.ph); });
+    ty.ticks.forEach(t => { const y = Math.round(p.Y(t)) + .5; ctx.moveTo(p.pad.l, y); ctx.lineTo(p.pad.l + p.pw, y); });
+    ctx.stroke();
+    ctx.strokeStyle = tok('--rule-strong'); ctx.beginPath();
+    if (p.v.y0 <= 0 && p.v.y1 >= 0) { const y = Math.round(p.Y(0)) + .5; ctx.moveTo(p.pad.l, y); ctx.lineTo(p.pad.l + p.pw, y); }
+    if (p.v.x0 <= 0 && p.v.x1 >= 0) { const x = Math.round(p.X(0)) + .5; ctx.moveTo(x, p.pad.t); ctx.lineTo(x, p.pad.t + p.ph); }
+    ctx.stroke();
+    ctx.fillStyle = tok('--muted'); ctx.font = MONO;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    tx.ticks.forEach(t => ctx.fillText(t.toFixed(tx.dec), p.X(t), p.pad.t + p.ph + 8));
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ty.ticks.forEach(t => ctx.fillText(t.toFixed(ty.dec), p.pad.l - 8, p.Y(t)));
+  };
+  p.clip = () => { ctx.save(); ctx.beginPath(); ctx.rect(p.pad.l, p.pad.t, p.pw, p.ph); ctx.clip(); };
+  p.unclip = () => ctx.restore();
+  p.hline = (y, color, dash, w) => { ctx.strokeStyle = color; ctx.lineWidth = w || 1.2; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(p.pad.l, p.Y(y)); ctx.lineTo(p.pad.l + p.pw, p.Y(y)); ctx.stroke(); ctx.setLineDash([]); };
+  p.vline = (x, color, dash, w) => { ctx.strokeStyle = color; ctx.lineWidth = w || 1.2; ctx.setLineDash(dash || []); ctx.beginPath(); ctx.moveTo(p.X(x), p.pad.t); ctx.lineTo(p.X(x), p.pad.t + p.ph); ctx.stroke(); ctx.setLineDash([]); };
+  p.band = (y0, y1, color, alpha) => { ctx.globalAlpha = alpha; ctx.fillStyle = color; ctx.fillRect(p.pad.l, p.Y(Math.max(y0, y1)), p.pw, Math.abs(p.Y(y0) - p.Y(y1))); ctx.globalAlpha = 1; };
+  p.dot = (x, y, r, fill, ring) => { ctx.beginPath(); ctx.arc(p.X(x), p.Y(y), r, 0, 7); if (fill) { ctx.fillStyle = fill; ctx.fill(); } if (ring) { ctx.lineWidth = 2; ctx.strokeStyle = ring; ctx.stroke(); } };
+  p.label = (txt, x, y, color, align, base) => {
+    ctx.font = MONO; ctx.textAlign = align || 'left'; ctx.textBaseline = base || 'middle';
+    const w = ctx.measureText(txt).width, ax = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x;
+    ctx.fillStyle = tok('--surface'); ctx.globalAlpha = .85; ctx.fillRect(ax - 3, y - 8, w + 6, 16); ctx.globalAlpha = 1;
+    ctx.fillStyle = color; ctx.fillText(txt, x, y);
+  };
+  if (window.ResizeObserver) new ResizeObserver(() => draw()).observe(canvas); else window.addEventListener('resize', draw);
+  redraws.push(draw);
+  return p;
+}
+function rafPlay(ms, step, done) {
+  let t0 = null, id = 0;
+  const f = ts => { if (t0 === null) t0 = ts; const u = Math.min(1, (ts - t0) / ms); step(u); if (u < 1) id = requestAnimationFrame(f); else done && done(); };
+  id = requestAnimationFrame(f);
+  return () => cancelAnimationFrame(id);
+}
+function stepper(id) {
+  const steps = [...document.querySelectorAll('#' + id + ' .step')];
+  const next = $('#' + id + '-next'), all = $('#' + id + '-all');
+  const refresh = () => { const left = steps.some(s => s.hidden); next.hidden = !left; all.hidden = !left; };
+  next.addEventListener('click', () => { const s = steps.find(s => s.hidden); if (s) s.hidden = false; refresh(); });
+  all.addEventListener('click', () => { steps.forEach(s => s.hidden = false); refresh(); });
+  refresh();
+}
+function buildQuiz(Q) {
+  const box = $('#quiz'), scoreEl = $('#quiz-score'), right = new Set();
+  scoreEl.textContent = '已答对 0 / ' + Q.length;
+  Q.forEach((it, i) => {
+    const fs = document.createElement('fieldset'); fs.className = 'q';
+    fs.innerHTML = '<legend>' + (i + 1) + '. ' + it.q + '</legend><div class="opts">' +
+      it.o.map((t, j) => '<label><input type="radio" name="q' + i + '" id="q' + i + '-' + j + '" value="' + j + '"><span>' + 'ABCD'[j] + '. ' + t + '</span></label>').join('') +
+      '</div><div class="btns" style="margin-top:10px"><button type="button" id="q' + i + '-go">检查答案</button></div><div class="err" id="q' + i + '-err" role="alert"></div><div class="fb" id="q' + i + '-fb" aria-live="polite"></div>';
+    box.appendChild(fs);
+    fs.querySelectorAll('input').forEach(r => r.addEventListener('change', () => { $('#q' + i + '-err').textContent = ''; }));
+    $('#q' + i + '-go').addEventListener('click', () => {
+      const pick = fs.querySelector('input:checked');
+      if (!pick) { $('#q' + i + '-err').textContent = '先选一个选项。'; return; }
+      const v = +pick.value;
+      fs.querySelectorAll('label').forEach((l, j) => { l.classList.toggle('right', j === it.a); l.classList.toggle('wrong', j === v && v !== it.a); });
+      $('#q' + i + '-fb').innerHTML = (v === it.a ? '<b class="y">正确。</b>' : '<b class="n">不对，正确答案是 ' + 'ABCD'[it.a] + '。</b>') + it.e;
+      if (v === it.a) right.add(i); else right.delete(i);
+      scoreEl.textContent = '已答对 ' + right.size + ' / ' + Q.length;
+    });
+  });
+}
+function progress(KEY, ids) {
+  let done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { done = {}; }
+  function render() {
+    const n = ids.filter(id => done[id]).length;
+    $('#prog-txt').textContent = '已掌握 ' + n + ' / ' + ids.length;
+    $('#prog-bar').style.width = (n / ids.length * 100) + '%';
+    document.querySelectorAll('[data-done]').forEach(b => {
+      const on = !!done[b.dataset.done];
+      b.setAttribute('aria-pressed', on); b.textContent = on ? '✓ 已掌握' : '标记为已掌握';
+    });
+    document.querySelectorAll('#toc li').forEach(li => li.classList.toggle('done', !!done[li.dataset.s]));
+    document.querySelectorAll('#topnav a').forEach(a => a.classList.toggle('done', !!done[a.getAttribute('href').slice(1)]));
+  }
+  document.querySelectorAll('[data-done]').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.done; done[id] = !done[id];
+    try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {}
+    render();
+  }));
+  render();
+}
+function seg(group) {
+  const btns = [...document.querySelectorAll('#' + group + ' button')];
+  return (onChange) => btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(x => { const on = x === b; x.classList.toggle('primary', on); x.setAttribute('aria-pressed', on); });
+    onChange(b.dataset.v);
+  }));
+}
+
+/* ---------- §1 uniqueness ---------- */
+(function(){
+  const f = n => 1 + (n % 2 ? -1 : 1) / Math.sqrt(n), A = 1;
+  const eI = $('#u-eps'), bI = $('#u-B');
+  const P = Plot($('#u-cv'), draw);
+  const lastBad = (L, e) => { let last = 0; for (let n = 1; n <= 20000; n++) if (!(Math.abs(f(n) - L) < e)) last = n; return last; };
+  function draw() {
+    const e = +eI.value, B = +bI.value, half = Math.abs(A - B) / 2;
+    const NA = lastBad(A, e), NBraw = lastBad(B, e), NBfail = NBraw > 18000;
+    const xMax = Math.min(400, Math.max(30, Math.ceil(NA * 1.3) + 8));
+    P.v = { x0: 0, x1: xMax + 1, y0: -0.15, y1: 2.15 };
+    P.size(); P.frame(6, 5);
+    const c = P.ctx, epsC = tok('--eps'), s2 = tok('--s2');
+    P.clip();
+    P.band(A - e, A + e, epsC, .13); P.band(B - e, B + e, s2, .12);
+    P.hline(A + e, epsC, [5, 4]); P.hline(A - e, epsC, [5, 4]); P.hline(A, epsC);
+    P.hline(B + e, s2, [5, 4]); P.hline(B - e, s2, [5, 4]); P.hline(B, s2);
+    if (NA > 0) P.vline(NA + .5, tok('--ink'), [3, 3]);
+    const r = xMax > 200 ? 1.8 : xMax > 80 ? 2.6 : 3.6, ok = tok('--ok'), bad = tok('--bad'), mu = tok('--muted');
+    for (let n = 1; n <= xMax; n++) {
+      const y = f(n), inA = Math.abs(y - A) < e;
+      P.dot(n, y, r, !inA ? bad : n > NA ? ok : mu);
+    }
+    P.unclip();
+    P.label('A', P.pad.l + 6, P.Y(A), epsC, 'left');
+    P.label('B', P.pad.l + 6, P.Y(B), s2, 'left');
+    if (NA > 0) P.label('N = ' + NA, Math.min(P.X(NA + .5) + 6, P.pad.l + P.pw - 70), P.pad.t + 10, tok('--ink'));
+    $('#u-eps-o').textContent = e.toFixed(2); $('#u-B-o').textContent = B.toFixed(2);
+    $('#u-r-eps').textContent = e.toFixed(2); $('#u-r-half').textContent = half.toFixed(2);
+    $('#u-r-NA').textContent = String(NA); $('#u-r-NB').textContent = NBfail ? '不存在' : String(NBraw);
+    const st = $('#u-status');
+    if (half < 0.005) {
+      st.className = 'status'; st.textContent = 'B 和 A 重合了。把 B 拖开，看看冒充者什么时候露馅。';
+    } else if (e >= half) {
+      st.className = 'status';
+      st.innerHTML = 'ε = ' + e.toFixed(2) + ' 不小于 |A − B|/2 = ' + half.toFixed(2) + '，两条带有重叠。' + (NBfail ? '这一次 B 已经找不到门槛了。' : '对这个 ε，B 也找得到门槛（N = ' + NBraw + '），暂时分不出谁是极限。') + '但定义要求对所有 ε 成立：把 ε 调到 ' + half.toFixed(2) + ' 以下。';
+    } else {
+      st.className = 'status bad';
+      st.innerHTML = '<span class="mk">✗</span>两条带不再相交。第 ' + (NA + 1) + ' 项之后的所有项都在 A 的带里，也就都不在 B 的带里，B 找不到门槛。唯一性的证明正是取 ε = |A − B|/2。';
+    }
+  }
+  eI.addEventListener('input', draw); bI.addEventListener('input', draw);
+  draw();
+})();
+
+/* ---------- §2 boundedness & sign ---------- */
+(function(){
+  const SEQ = {
+    s1: { f: n => 2 + 6 * (n % 2 ? -1 : 1) / n, A: 2 },
+    s2: { f: n => (n - 12) / (n + 2), A: 1 },
+    s3: { f: n => 1.5 - 8 / n + 10 / (n * n), A: 1.5 }
+  };
+  const sel = $('#b-seq');
+  let mode = 'bound';
+  const P = Plot($('#b-cv'), draw);
+  function draw() {
+    const s = SEQ[sel.value], A = s.A, e = mode === 'bound' ? 1 : A / 2, xMax = 40;
+    let N = 0; for (let n = 1; n <= 20000; n++) if (!(Math.abs(s.f(n) - A) < e)) N = n;
+    const vals = []; for (let n = 1; n <= xMax; n++) vals.push(s.f(n));
+    let headMax = 0, argMax = 0;
+    for (let n = 1; n <= N; n++) if (Math.abs(s.f(n)) > headMax) { headMax = Math.abs(s.f(n)); argMax = n; }
+    const M = Math.max(headMax, Math.abs(A) + 1);
+    if (mode === 'bound') { const m = Math.max(M, ...vals.map(Math.abs)) * 1.15; P.v = { x0: 0, x1: xMax + 1, y0: -m, y1: m }; }
+    else { const lo = Math.min(0, ...vals), hi = Math.max(...vals); P.v = { x0: 0, x1: xMax + 1, y0: lo - 0.35, y1: hi + 0.35 }; }
+    P.size(); P.frame(6, 5);
+    const epsC = tok('--eps'), acc = tok('--accent'), ok = tok('--ok'), bad = tok('--bad'), mu = tok('--muted'), ink = tok('--ink');
+    P.clip();
+    P.band(A - e, A + e, epsC, .13);
+    P.hline(A + e, epsC, [5, 4]); P.hline(A - e, epsC, [5, 4]); P.hline(A, epsC);
+    if (mode === 'bound') { P.hline(M, acc, [7, 4], 1.6); P.hline(-M, acc, [7, 4], 1.6); }
+    else P.hline(0, ink, [], 1.4);
+    if (N > 0) P.vline(N + .5, ink, [3, 3]);
+    for (let n = 1; n <= xMax; n++) {
+      const y = vals[n - 1];
+      let col;
+      if (mode === 'bound') col = n > N ? ok : acc;
+      else col = y <= 0 ? bad : n > N ? ok : mu;
+      P.dot(n, y, 3.6, col, mode === 'bound' && n === argMax && Math.abs(y) >= Math.abs(A) + 1 ? ink : null);
+    }
+    P.unclip();
+    if (mode === 'bound') { P.label('M = ' + fmt(M), P.pad.l + P.pw - 4, P.Y(M) - 10, acc, 'right'); P.label('−M', P.pad.l + P.pw - 4, P.Y(-M) + 10, acc, 'right'); P.label('A ± 1', P.pad.l + P.pw - 4, P.Y(A + e) - 10, epsC, 'right'); }
+    else { P.label('A/2 = ' + fmt(A / 2), P.pad.l + P.pw - 4, P.Y(A - e) + 10, epsC, 'right'); P.label('0', P.pad.l + 6, P.Y(0) - 10, ink, 'left'); }
+    if (N > 0) P.label('N = ' + N, Math.min(P.X(N + .5) + 6, P.pad.l + P.pw - 70), P.pad.t + 10, ink);
+    const st = $('#b-status'), rd = $('#b-read');
+    if (mode === 'bound') {
+      rd.innerHTML = '<span>ε = <b>1</b></span><span>N = <b>' + N + '</b></span><span>前 N 项最大 |aₙ| = <b>' + fmt(headMax) + '</b></span><span>|A| + 1 = <b>' + fmt(Math.abs(A) + 1) + '</b></span><span>M = <b>' + fmt(M) + '</b></span>';
+      st.className = 'status ok';
+      st.innerHTML = '<span class="mk">✓</span>取 ε = 1：从第 ' + (N + 1) + ' 项起所有项落在 (A − 1, A + 1) 里（绿色），绝对值小于 |A| + 1 = ' + fmt(Math.abs(A) + 1) + '。门槛前只有 ' + N + ' 项（蓝色），取它们绝对值的最大值 ' + fmt(headMax) + '。两者取大：M = ' + fmt(M) + '，所有项都在 ±M 之间。';
+    } else {
+      const neg = vals.filter(v => v <= 0).length;
+      rd.innerHTML = '<span>ε = A/2 = <b>' + fmt(e) + '</b></span><span>N = <b>' + N + '</b></span><span>非正的项 = <b>' + neg + ' 个</b></span>';
+      st.className = 'status ok';
+      st.innerHTML = '<span class="mk">✓</span>取 ε = A/2 = ' + fmt(e) + '：当 n &gt; ' + N + ' 时 aₙ &gt; A/2 = ' + fmt(A / 2) + ' &gt; 0。' + (neg ? '前面有 ' + neg + ' 项不是正数（红色），但只有有限个，不影响结论。' : '这个数列前面恰好也没有负项，但证明并不依赖这一点。');
+    }
+  }
+  seg('b-mode')(v => { mode = v; draw(); });
+  sel.addEventListener('change', draw);
+  draw();
+})();
+
+/* ---------- §3 product rectangle ---------- */
+(function(){
+  const I = { A: $('#r-A'), B: $('#r-B'), da: $('#r-da'), db: $('#r-db') };
+  let stop = null;
+  const cv = $('#r-cv');
+  const P = Plot(cv, draw);
+  function draw() {
+    const A = +I.A.value, B = +I.B.value, da = +I.da.value, db = +I.db.value;
+    P.size();
+    const c = P.ctx, U = 3.6, s = Math.min(P.pw / U, P.ph / U), ox = P.pad.l + Math.max(0, (P.pw - U * s) / 2), oy = P.pad.t + P.ph;
+    const R = (x0, y0, x1, y1) => [ox + x0 * s, oy - y1 * s, (x1 - x0) * s, (y1 - y0) * s];
+    const fill = (rect, col, a) => { c.globalAlpha = a; c.fillStyle = col; c.fillRect(...rect); c.globalAlpha = 1; c.strokeStyle = col; c.lineWidth = 1.4; c.strokeRect(...rect); };
+    const ink = tok('--ink'), mu = tok('--muted'), acc = tok('--accent'), del = tok('--delta'), s2 = tok('--s2'), bad = tok('--bad');
+    c.strokeStyle = tok('--rule-strong'); c.lineWidth = 1; c.beginPath(); c.moveTo(ox, oy); c.lineTo(ox + U * s, oy); c.moveTo(ox, oy); c.lineTo(ox, oy - U * s); c.stroke();
+    fill(R(0, 0, A, B), acc, .14);
+    if (da > 0) fill(R(A, 0, A + da, B), del, .28);
+    if (db > 0) fill(R(0, B, A, B + db), s2, .26);
+    if (da > 0 && db > 0) fill(R(A, B, A + da, B + db), bad, .4);
+    c.strokeStyle = ink; c.lineWidth = 2; c.strokeRect(...R(0, 0, A + da, B + db));
+    const L = (t, x, y, col) => P.label(t, ox + x * s, oy - y * s, col, 'center');
+    L('AB = ' + fmt(A * B), A / 2, B / 2, acc);
+    if (da * s > 34) L('BΔa', A + da / 2, B / 2, del);
+    if (db * s > 18) L('AΔb', A / 2, B + db / 2, s2);
+    if (da * s > 44 && db * s > 18) L('ΔaΔb', A + da / 2, B + db / 2, bad);
+    c.fillStyle = mu; c.font = MONO; c.textAlign = 'center'; c.textBaseline = 'top';
+    c.fillText('A', ox + A / 2 * s, oy + 8); if (da * s > 20) c.fillText('Δa', ox + (A + da / 2) * s, oy + 8);
+    c.textAlign = 'right'; c.textBaseline = 'middle';
+    c.fillText('B', ox - 8, oy - B / 2 * s); if (db * s > 14) c.fillText('Δb', ox - 8, oy - (B + db / 2) * s);
+    const tA = A * db, tB = B * da, tC = da * db, tot = tA + tB + tC;
+    ['A', 'B', 'da', 'db'].forEach(k => { $('#r-' + k + '-o').textContent = fmt(+I[k].value); });
+    $('#r-read').innerHTML = '<span>ab − AB = <b>' + fmt(tot) + '</b></span><span style="color:var(--s2)">AΔb = <b>' + fmt(tA) + '</b></span><span style="color:var(--delta)">BΔa = <b>' + fmt(tB) + '</b></span><span style="color:var(--bad)">ΔaΔb = <b>' + fmt(tC) + '</b></span>';
+    const st = $('#r-status');
+    st.className = 'status';
+    st.innerHTML = tot === 0 ? '误差为 0：a = A，b = B。' : '角上那块占总误差的 ' + (tC / tot * 100).toFixed(1) + '%。Δa、Δb 同时减半时，两条长条各自减半，角块变成原来的四分之一，所以它比另外两块小得快。真正要控制的是两条长条，系数分别是 A 和 B。';
+  }
+  Object.values(I).forEach(i => i.addEventListener('input', () => { stop && stop(); draw(); }));
+  $('#r-play').addEventListener('click', () => {
+    stop && stop(); const a0 = +I.da.value || 0.8, b0 = +I.db.value || 0.6;
+    stop = rafPlay(4000, u => { const k = 1 - u; I.da.value = (a0 * k).toFixed(3); I.db.value = (b0 * k).toFixed(3); draw(); }, () => { stop = null; });
+  });
+  draw();
+})();
+
+/* ---------- §4 squeeze: unit circle ---------- */
+(function(){
+  const xI = $('#s-x');
+  let stop = null;
+  const P1 = Plot($('#s-cv1'), draw), P2 = Plot($('#s-cv2'), draw);
+  P1.pad = { l: 26, r: 14, t: 14, b: 26 };
+  P2.pad = { l: 40, r: 12, t: 14, b: 30 };
+  function draw() {
+    const x = +xI.value, sx = Math.sin(x), cx = Math.cos(x), tx = Math.tan(x);
+    const ink = tok('--ink'), mu = tok('--muted'), acc = tok('--accent'), s2 = tok('--s2'), rs = tok('--rule-strong');
+    /* left: unit circle */
+    P1.size();
+    const c = P1.ctx, R = Math.min(P1.pw * 0.86, P1.ph * 0.86), ox = P1.pad.l + 6, oy = P1.pad.t + P1.ph;
+    const X = u => ox + u * R, Y = v => oy - v * R;
+    c.save(); c.beginPath(); c.rect(0, P1.pad.t, P1.W, P1.ph + P1.pad.b); c.clip();
+    c.strokeStyle = rs; c.lineWidth = 1; c.beginPath(); c.moveTo(ox, oy); c.lineTo(X(1.12), oy); c.moveTo(ox, oy); c.lineTo(ox, Y(1.12)); c.stroke();
+    c.strokeStyle = mu; c.lineWidth = 1.4; c.beginPath(); c.arc(ox, oy, R, -Math.PI / 2, 0); c.stroke();
+    c.globalAlpha = .08; c.fillStyle = ink; c.beginPath(); c.moveTo(ox, oy); c.lineTo(X(1), oy); c.lineTo(X(1), Y(tx)); c.closePath(); c.fill(); c.globalAlpha = 1;
+    c.strokeStyle = mu; c.setLineDash([5, 4]); c.beginPath(); c.moveTo(ox, oy); c.lineTo(X(1), Y(tx)); c.lineTo(X(1), oy); c.stroke(); c.setLineDash([]);
+    c.globalAlpha = .16; c.fillStyle = acc; c.beginPath(); c.moveTo(ox, oy); c.arc(ox, oy, R, -x, 0); c.closePath(); c.fill(); c.globalAlpha = 1;
+    c.strokeStyle = acc; c.lineWidth = 2; c.beginPath(); c.arc(ox, oy, R, -x, 0); c.stroke();
+    c.globalAlpha = .3; c.fillStyle = s2; c.beginPath(); c.moveTo(ox, oy); c.lineTo(X(1), oy); c.lineTo(X(cx), Y(sx)); c.closePath(); c.fill(); c.globalAlpha = 1;
+    c.strokeStyle = s2; c.lineWidth = 1.6; c.beginPath(); c.moveTo(X(cx), Y(sx)); c.lineTo(X(cx), oy); c.stroke();
+    c.strokeStyle = ink; c.lineWidth = 2.4; c.beginPath(); c.moveTo(X(1), oy); c.lineTo(X(1), Y(tx)); c.stroke();
+    c.restore();
+    [[0, 0, 'O'], [1, 0, 'A'], [cx, sx, 'P']].forEach(([u, v, t]) => { c.fillStyle = ink; c.beginPath(); c.arc(X(u), Y(v), 3, 0, 7); c.fill(); });
+    P1.label('O', ox + 2, oy + 12, ink, 'left'); P1.label('A', X(1), oy + 12, ink, 'center'); P1.label('P', X(cx) - 8, Y(sx) - 10, ink, 'right');
+    if (Y(tx) > P1.pad.t + 8) P1.label('T', X(1) + 8, Y(tx), ink, 'left'); else P1.label('T ↑', X(1) + 8, P1.pad.t + 8, ink, 'left');
+    P1.label('sin x', X(cx) - 6, Y(sx / 2), s2, 'right');
+    P1.label('tan x', X(1) + 8, Math.max(Y(Math.min(tx, 1.05) / 2), P1.pad.t + 24), ink, 'left');
+    /* right: graphs */
+    P2.v = { x0: -1.6, x1: 1.6, y0: 0, y1: 1.15 };
+    P2.size(); P2.frame(4, 4);
+    const d = P2.ctx;
+    const curve = (g, col, w, dash) => {
+      d.strokeStyle = col; d.lineWidth = w; d.setLineDash(dash || []); d.beginPath(); let st = false;
+      for (let i = 0; i <= 400; i++) { const t = -1.6 + 3.2 * i / 400; if (Math.abs(t) < 1e-9) continue; const px = P2.X(t), py = P2.Y(g(t)); if (!st) { d.moveTo(px, py); st = true; } else d.lineTo(px, py); }
+      d.stroke(); d.setLineDash([]);
+    };
+    P2.clip();
+    P2.vline(x, s2, [3, 3], 1); P2.vline(-x, s2, [3, 3], 1);
+    curve(Math.cos, mu, 1.6); curve(() => 1, mu, 1.6, [6, 4]); curve(t => Math.sin(t) / t, acc, 2.6);
+    P2.dot(0, 1, 4.5, tok('--surface'), acc);
+    [[cx, mu], [sx / x, acc], [1, mu]].forEach(([v, col]) => { P2.dot(x, v, 4, col); P2.dot(-x, v, 4, col); });
+    P2.unclip();
+    P2.label('1', P2.pad.l + 6, P2.Y(1) - 10, mu, 'left');
+    P2.label('sin x / x', P2.X(0) , P2.Y(0.93) + 14, acc, 'center');
+    P2.label('cos x', P2.X(-1.15), P2.Y(Math.cos(-1.15)) + 12, mu, 'center');
+    $('#s-x-o').textContent = x.toFixed(2);
+    $('#s-read').innerHTML = '<span style="color:var(--s2)">sin x = <b>' + sx.toFixed(4) + '</b></span><span style="color:var(--accent)">x = <b>' + x.toFixed(4) + '</b></span><span>tan x = <b>' + tx.toFixed(4) + '</b></span><span>cos x = <b>' + cx.toFixed(4) + '</b> ≤ sin x / x = <b>' + (sx / x).toFixed(4) + '</b> ≤ 1</span>';
+  }
+  xI.addEventListener('input', () => { stop && stop(); draw(); });
+  $('#s-play').addEventListener('click', () => {
+    stop && stop(); const a = 1.4, b = 0.05;
+    stop = rafPlay(5000, u => { xI.value = (a + (b - a) * u).toFixed(3); draw(); }, () => { stop = null; });
+  });
+  draw();
+})();
+
+stepper('steps-u'); stepper('steps-r'); stepper('steps-s');
+
+buildQuiz([
+  { q: '若对所有 n 有 aₙ > 0，且 aₙ → A，则 A 满足什么？', o: ['A > 0', 'A ≥ 0', 'A 可能为负', '无法确定'], a: 1,
+    e: '保不等式只能得到 A ≥ 0。严格不等号会在取极限时丢失：1/n > 0，极限却是 0。' },
+  { q: '关于“收敛”和“有界”，下列哪个说法正确？', o: ['有界数列一定收敛', '收敛数列有界，但有界数列不一定收敛', '收敛与有界等价', '无界数列也可能收敛'], a: 1,
+    e: '定理 2.2 说收敛 ⇒ 有界。反过来不对：(−1)ⁿ 有界但不收敛。D 与定理 2.2 矛盾：收敛必有界，所以无界数列一定发散。' },
+  { q: '已知 aₙ → 2，下列哪个一定成立？', o: ['存在 N，n > N 时 aₙ > 1.9', '存在 N，n > N 时 aₙ > 2', '存在 N，n > N 时 aₙ ≥ 2', '对所有 n 有 aₙ < 2.1'], a: 0,
+    e: '对 ε = 0.1 用定义即得 A。B、C 不对：aₙ = 2 − 1/n 始终小于 2。D 不对：定义只管门槛之后，前面的项可以很大。' },
+  { q: '求 lim(x→0) sin 3x / x。', o: ['1', '3', '1/3', '0'], a: 1,
+    e: 'sin 3x / x = 3 · sin 3x / (3x)，令 t = 3x，t → 0 时 sin t / t → 1，所以极限是 3。' },
+  { q: '若 aₙbₙ 收敛，能否推出 aₙ 和 bₙ 都收敛？', o: ['能，由乘法法则', '不能，例如 aₙ = bₙ = (−1)ⁿ', '能，但要求极限不为 0', '只能推出其中一个收敛'], a: 1,
+    e: '乘法法则的方向是“两个都收敛 ⇒ 乘积收敛”，反过来不成立。(−1)ⁿ · (−1)ⁿ = 1 收敛，两个因子都发散。' }
+]);
+progress('ch2-progress', ['s1', 's2', 's3', 's4', 's5']);
+
+})();
+</script>
+</body>
+</html>
